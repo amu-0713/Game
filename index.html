@@ -210,6 +210,30 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 .holders i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; margin-right: 5px; }
 
 .card { border: 1.5px solid var(--ink); border-radius: 12px; padding: 10px 12px; background: var(--surface); display: flex; flex-direction: column; gap: 6px; margin-bottom: 9px; box-shadow: 0 3px 0 var(--ink); }
+.regime-box { border-radius: 10px; padding: 8px 12px; margin: 2px 0 10px; font-size: 13.5px; background: var(--surface-2); border-left: 4px solid var(--gold); }
+.regime-box.fcbox div { margin-top: 3px; }
+.hud-event .fc { color: #e8eef5; }
+.hud-event .fcl { margin-left: 1em; }
+@media (max-width: 899px) { .hud-event .fcl { display: block; margin-left: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } }
+.offer { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 6px; }
+.offer-card { text-align: left; border: 1.5px solid var(--ink); border-radius: 10px; padding: 6px 8px; background: var(--surface); display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.offer-card b { font-family: var(--font-display); font-size: 15px; }
+.offer-card small { font-size: 11px; font-weight: 700; color: var(--ink-2); }
+.offer-card span { font-size: 11.5px; color: var(--ink-2); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.offer-card em { font-style: normal; font-weight: 700; font-size: 12.5px; color: var(--accent); margin-top: auto; }
+.offer-card:hover { background: var(--surface-2); }
+.offer-card[disabled] { opacity: 0.45; cursor: default; }
+.offer-card.sold { border-style: dashed; color: var(--ink-2); justify-content: center; align-items: center; }
+.offer-card.cat-attack small { color: var(--up); }
+.offer-card.cat-action small { color: var(--down); }
+.regime-box.bull { border-left-color: var(--up); }
+.regime-box.bear { border-left-color: var(--down); }
+.card .cat { font-weight: 700; padding: 0 7px; border-radius: 5px; background: var(--surface-2); }
+.card.cat-attack .cat { background: var(--up-bg); color: var(--up); }
+.card.cat-neutral .cat { background: var(--surface-2); color: var(--ink-2); }
+.card.cat-action .cat, .card.cat-fixed .cat { background: var(--down-bg); color: var(--down); }
+.card-acts .pick, .trade .pick { display: inline-flex; flex-wrap: wrap; gap: 4px; align-items: center; }
+.card-acts .btn.small, .trade .pick .btn.small { min-width: 34px; }
 .card.active { background: var(--surface-2); box-shadow: none; border-color: var(--line); }
 .card-top { display: flex; align-items: baseline; gap: 8px; }
 .card-top b { font-family: var(--font-display); font-size: 18px; }
@@ -357,27 +381,32 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   <ol>
     <li><b>開盤</b>：翻一張總經事件，相關產業一起漲跌；每家公司再各自小幅波動；接著亮出本季的景氣燈號。</li>
     <li><b>每人行動一次</b>：自己選擲一顆或兩顆骰子前進，執行停留格子的效果。擲骰前後都可以賣股票、出策略卡。</li>
-    <li><b>收盤</b>：結算策略卡的季末效果，生效中的卡剩餘季數減一。</li>
+    <li><b>收盤</b>：記錄股價；每年第 4 季收盤發股息與大股東權益報酬。</li>
   </ol>
   <p>先手每季輪流。時間只看「季」，走得快只會多經過幾次結算站，不會比別人多行動。</p>
 
   <h3>景氣燈號</h3>
+  <p>參考台灣的景氣對策信號，遊戲有一個<b>景氣分數</b>（9～45 分，開局 25 分）。每季開盤時依總經事件加減分（景氣復甦、熱錢湧入加很多，景氣衰退、外資提款扣很多），再往 25 分靠近 1 分；黑天鵝也會扣分。分數決定燈號：</p>
   <ul>
-    <li><b class="up">多頭季</b>：大盤比上一季漲超過 2.5%。</li>
-    <li><b class="down">空頭季</b>：大盤比上一季跌超過 2.5%。</li>
-    <li><b>盤整季</b>：其他情況。</li>
+    <li><b class="up">多頭季</b>（31 分以上）：一般買進原價、併購溢價 15%、<b>賣出免交易成本</b>。</li>
+    <li><b>盤整季</b>（21～30 分）：一般買進原價、併購溢價 10%、賣出交易成本 1%。</li>
+    <li><b class="down">空頭季</b>（20 分以下）：<b>一般買進打九折</b>、併購溢價只要 5%、賣出交易成本 1%。</li>
   </ul>
+  <p><b>經濟預告</b>：每季開盤後會公布下一季的兩個候選總經事件，下一季會從這兩個裡面各半機率發生一個。所有人看得到，可以提前佈局。</p>
+  <p>分數要累積才會換燈，所以燈號通常會維持兩三季。看分數接近門檻，就可以提前準備：快進多頭時先買、快進空頭時先賣或留現金等著撿便宜。</p>
   <p>台股習慣紅色代表漲、綠色代表跌，遊戲裡也一樣。</p>
 
   <h3>格子</h3>
   <ul>
     <li><b>公司</b>（24 格）：可以用當下股價買進這家公司，每次最多 10 張。</li>
-    <li><b>結算站</b>：經過或停留會拿到一張「遠端下單」，再抽兩張策略卡。不發錢。</li>
-    <li><b>策略教室</b>：抽一張策略卡。</li>
-    <li><b>產業快訊</b>：抽一張快訊，可能讓某個產業或某檔股票漲跌，也可能是你個人的收支。</li>
-    <li><b>券商營業廳</b>：可以買進任一家公司，最多 10 張。</li>
-    <li><b>茶水間</b>：領 1 萬零用金。</li>
-    <li><b>黑天鵝</b>：翻開一張全市場大事件，所有人同時受影響。</li>
+    <li><b>結算站</b>：經過或停留會拿到一張「遠端下單」，再抽一張策略卡。不發錢。</li>
+    <li><b>策略會議</b>（角落）：抽兩張策略卡，選一張留下。</li>
+    <li><b>證券交易所</b>（角落）：可以買進任一家公司，最多 10 張，也可以併購。</li>
+    <li><b>黑天鵝</b>（角落，結算站正對面）：翻開一張全市場大事件，所有人同時受影響。</li>
+    <li><b>卡片交易所</b>（角落）：經過時貨架有 3 張卡，可以買 1 張；停在這裡貨架有 5 張，可以買 2 張。每張 3 萬，只能買不能換。</li>
+    <li><b>央行</b>（角落）：由你決定降息（景氣分數 +3）或升息（景氣分數 −3），本季燈號馬上跟著變。</li>
+    <li><b>法說會</b>（長邊中間）：隨機一家公司擲骰上漲 5%～10%。</li>
+    <li><b>法會</b>（長邊中間）：法會辦得不太順利，隨機一家公司擲骰下跌 5%～10%。</li>
   </ul>
 
   <h3>買賣股票</h3>
@@ -392,10 +421,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   </ul>
 
   <h3>年底發放</h3>
-  <p>每年第 4 季收盤（第 5 年也有）一起發兩筆錢：</p>
+  <p>每年第 4 季收盤（第 5 年也有）一起發三筆錢：</p>
   <ul>
     <li><b>股息</b>：每張持股依那家公司的固定股息發現金。金融、傳產股息高但波動小，半導體、生技的成長股幾乎沒有股息。</li>
     <li><b>大股東權益報酬</b>：你當大股東的每家公司，發你持股市值的 5%。</li>
+    <li><b>現金利息</b>：手上現金的 2%。</li>
   </ul>
 
   <h3>大股東</h3>
@@ -409,15 +439,17 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 
   <h3>策略卡</h3>
   <ul>
-    <li>手牌上限 5 張，超過要先出卡或棄卡才能結束回合。</li>
-    <li>持續型的卡出牌後生效 4 季，同時最多 3 張生效。已滿時出新卡要換掉一張；同名卡重出會重新計時。</li>
-    <li>即時型的卡用完就丟。</li>
+    <li>手牌上限 5 張，超過要先出卡或棄卡才能結束回合。所有卡都是用完就丟。</li>
+    <li><b>行動卡</b>：管自己的走位和買賣，例如指定骰、三顆骰、增資認購、庫藏股。</li>
+    <li><b>對抗卡</b>：針對對手，例如產業利空、敵意併購、查帳、公開收購。</li>
+    <li><b>中立卡</b>：影響所有人，例如產業利多、景氣轉向。</li>
+    <li>產業利多與利空只能用在你站著的公司所屬產業，同一季同一個產業只能被卡片影響一次。</li>
   </ul>
   <p>每張卡的效果請看「公司與卡片」分頁。</p>
 
   <h3>電腦對手</h3>
   <ul>
-    <li><b>保守型</b>：偏好低波動、高股息的股票，保留兩成現金，空頭時更小心。</li>
+    <li><b>保守型</b>：偏好低波動、高股息、能當大股東的股票，會看經濟預告換股；多頭時多留現金，空頭時趁九折買進。</li>
     <li><b>激進型</b>：偏好高波動的股票，幾乎滿倉，追剛有利多的產業。</li>
     <li><b>隨便買</b>：每一步都亂選，用來對照勝率。</li>
     <li>三種正式風格都會在能搶下大股東時併購，踩到自己的公司會算哪個划算再選內部認股或拉抬。</li>
@@ -442,6 +474,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 </template>
 
 <template id="tplBalance">
+  <p><b>第 8 版：格子改成策略會議、證券交易所、卡片交易所、央行、法說會、法會，拿掉產業快訊與茶水間；加入經濟預告與年底現金利息。</b></p>
+  <p><b>第 7 版：策略卡全面改成行動、對抗、中立三類，景氣燈號改成分數制。</b></p>
   <p><b>第 6 版機制調整（年底發放、大股東權益報酬、拉抬股價、併購）之後還沒有重新平衡</b>，以下是之前版本的紀錄。</p>
   <p>規則層可以在沒有畫面的情況下跑完整局。每一版都用電腦對手自動對打，每輪約 5,000 局，檢查卡死、數值極端、座位公平、產業與卡片強度，再調整數值。以下是四版的紀錄。</p>
 
@@ -567,7 +601,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     briefUp: 0.08,
     regimeTh: 0.025,
     vol: { L: 0.03, M: 0.06, H: 0.1 },
-    growth: { semi: 0.021, ship: 0.014, fin: 0.015, bio: 0.017, trad: 0.015, tour: 0.021 },
+    growth: { semi: 0.0126, ship: 0.0084, fin: 0.009, bio: 0.0102, trad: 0.009, tour: 0.0126 },
+    priceDrift: 1,
     rev: 0.1,
     revClamp: 0.06,
     fairShare: 0.5,
@@ -590,7 +625,26 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     pumpBase: 4,
     mergeCap: 10,
     mergePremium: 0.1,
-    settleDraw: 2
+    settleDraw: 1,
+    // 景氣分數：每季加上總經事件的分數，再往中間值靠攏；分數決定燈號
+    scoreStart: 25, scoreMin: 9, scoreMax: 45, scoreMid: 25, scoreDrift: 1,
+    scoreScale: 2, scoreBull: 31, scoreBear: 20, swanScoreShare: 0.5,
+    // 燈號直接影響買賣條件
+    regimeRules: {
+      bull: { buyDisc: 0, premium: 0.15, sellFee: 0 },
+      flat: { buyDisc: 0, premium: 0.1, sellFee: 0.01 },
+      bear: { buyDisc: 0.1, premium: 0.05, sellFee: 0.01 }
+    },
+    capitalExtra: 5,
+    treasuryCap: 5,
+    treasuryDisc: 0.1,
+    tenderCap: 5,
+    auditCut: 0.5,
+    sectorCardBase: 4,
+    cashRate: 0.02,
+    shopPrice: 30000, shopPass: 3, shopPassBuy: 1, shopLand: 5, shopLandBuy: 2,
+    cbStep: 3,
+    briefBase: 4, ritualBase: 4
   };
 
   var sectors = [
@@ -636,19 +690,19 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   var board = [
     { type: 'start', name: '結算站' },
     C(0), C(1), C(2), C(3),
-    { type: 'card', name: '策略教室' },
+    { type: 'meeting', name: '策略會議' },
     C(4), C(5), C(6), C(7),
-    { type: 'news', name: '產業快訊' },
+    { type: 'broker', name: '證券交易所' },
     C(8), C(9),
-    { type: 'broker', name: '券商營業廳' },
+    { type: 'brief', name: '法說會' },
     C(10), C(11),
     { type: 'swan', name: '黑天鵝' },
     C(12), C(13), C(14), C(15),
-    { type: 'card', name: '策略教室' },
+    { type: 'shop', name: '卡片交易所' },
     C(16), C(17), C(18), C(19),
-    { type: 'news', name: '產業快訊' },
+    { type: 'cb', name: '央行' },
     C(20), C(21),
-    { type: 'rest', name: '茶水間' },
+    { type: 'ritual', name: '法會' },
     C(22), C(23)
   ];
   board.forEach(function (c, i) { c.idx = i; });
@@ -682,7 +736,13 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     { name: '電子旺季', desc: '新機備貨潮，半導體與航運出貨暢旺。', sectors: { semi: 8, ship: 4 } },
     { name: '風平浪靜', desc: '本季沒有重大消息。', all: 0 }
   ];
-  macro.forEach(function (m, i) { m.id = i; });
+  function scoreOf(m) {
+    var sum = 0;
+    sectors.forEach(function (x) { sum += m.sectors && m.sectors[x.id] !== undefined ? m.sectors[x.id] : m.all || 0; });
+    if (m.hv) sum += m.hv * 2;
+    return Math.round(sum / 7);
+  }
+  macro.forEach(function (m, i) { m.id = i; m.score = scoreOf(m); });
 
   var news = [
     { name: '法人喊進', kind: 'sector', pct: 8 },
@@ -710,26 +770,30 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     { name: '貿易戰開打', desc: '關稅壁壘升高，出口與貨運量急縮。', sectors: { ship: -15, trad: -10, semi: -5 } },
     { name: '藥害醜聞', desc: '重大藥害事件，生技股信心崩盤。', sectors: { bio: -18 } }
   ];
-  swans.forEach(function (m, i) { m.id = i; });
+  swans.forEach(function (m, i) { m.id = i; m.score = scoreOf(m); });
 
+  // cat：action 行動／attack 對抗／neutral 中立／fixed 固定發放（不進牌堆）
+  // when：pre 擲骰前／rolled 擲骰後移動前／turn 擲骰前或行動中／act 移動後
   var cards = {
-    highdiv: { name: '高股息', kind: 'lasting', count: 4, text: '年底發股息時，股息加倍。' },
-    momentum: { name: '強勢動能', kind: 'lasting', count: 4, text: '多頭季收盤時，送你一筆獎金，大約是持股市值的 2%。' },
-    lowvol: { name: '低波動', kind: 'lasting', count: 3, text: '利空事件或黑天鵝讓你的持股跌價時，補貼你一半損失。' },
-    value: { name: '價值投資', kind: 'lasting', count: 4, text: '買標示「便宜」的股票打八五折。' },
-    hedge: { name: '現金避險', kind: 'lasting', count: 4, text: '空頭季收盤時，你手上的現金生 8% 利息。' },
-    rotate: { name: '產業輪動', kind: 'lasting', count: 4, text: '出牌時選一個產業。這個產業因事件上漲時，你在這個產業多賺一倍。', needSector: true },
-    contra: { name: '逆勢抄底', kind: 'lasting', count: 3, text: '空頭季買股票打八五折。' },
-    discipline: { name: '存股紀律', kind: 'lasting', count: 3, text: '手上有股票而且整季都沒賣，季末領 8 千。' },
-    seat: { name: '董事席位', kind: 'lasting', count: 2, text: '年底發大股東權益報酬時，報酬加倍。' },
-    remote: { name: '遠端下單', kind: 'instant', count: 0, text: '這回合可以買進任一家公司，最多 5 張，不用踩到它。不能買你正站著的那一家，也不能用來併購。' },
-    reroll: { name: '加班趕路', kind: 'instant', count: 2, text: '對擲骰結果不滿意？重擲一次。' }
+    remote: { name: '遠端下單', cat: 'fixed', when: 'turn', count: 0, text: '這回合可以買進任一家公司，最多 5 張，不用踩到它。不能買你正站著的那一家，也不能用來併購。' },
+    pick: { name: '指定骰', cat: 'action', when: 'pre', count: 3, text: '不擲骰，自己選要走 1～6 步。', need: 'steps' },
+    triple: { name: '三顆骰', cat: 'action', when: 'pre', count: 3, text: '這回合擲三顆骰子前進。' },
+    reroll: { name: '加班趕路', cat: 'action', when: 'rolled', count: 2, text: '擲骰後不滿意，可以重擲一次。' },
+    capital: { name: '增資認購', cat: 'action', when: 'turn', count: 3, text: '這回合一般買進的上限多 5 張。' },
+    treasury: { name: '庫藏股', cat: 'action', when: 'turn', count: 2, text: '這回合你當大股東的公司，不用踩到也能九折買進，最多 5 張。' },
+    bear: { name: '產業利空', cat: 'attack', when: 'act', count: 3, text: '你站著的公司所屬產業，擲一顆骰下跌 5%～10%。' },
+    hostile: { name: '敵意併購', cat: 'attack', when: 'turn', count: 3, text: '這回合併購不用付溢價。' },
+    audit: { name: '查帳', cat: 'attack', when: 'turn', count: 2, text: '指定一位對手，他下次年底的大股東權益報酬減半。', need: 'target' },
+    tender: { name: '公開收購', cat: 'attack', when: 'turn', count: 2, text: '這回合不用踩到，可以向對手併購任一家公司，最多 5 張。' },
+    bull: { name: '產業利多', cat: 'neutral', when: 'act', count: 3, text: '你站著的公司所屬產業，擲一顆骰上漲 5%～10%。' },
+    flip: { name: '景氣轉向', cat: 'neutral', when: 'turn', count: 2, text: '這一季的燈號立刻翻轉（多頭與空頭互換），盤整時不能用。下一季照景氣分數恢復。' }
   };
-  Object.keys(cards).forEach(function (k) { cards[k].id = k; });
+  var CAT_NAMES = { action: '行動', attack: '對抗', neutral: '中立', fixed: '固定' };
+    Object.keys(cards).forEach(function (k) { cards[k].id = k; });
 
   RL.data = {
     K: K, sectors: sectors, companies: companies, board: board, sideCells: sideCells,
-    macro: macro, news: news, swans: swans, cards: cards,
+    macro: macro, news: news, swans: swans, cards: cards, CAT_NAMES: CAT_NAMES,
     sectorById: function (id) { for (var i = 0; i < sectors.length; i++) if (sectors[i].id === id) return sectors[i]; return null; }
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
@@ -883,12 +947,15 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     s.prevClose = s.prices.slice();
     ev.push({ t: 'quarter', q: s.quarter, year: Math.ceil(s.quarter / 4), season: ((s.quarter - 1) % 4) + 1, first: s.first });
 
-    var m = D.macro[s.macroDeck[s.quarter - 1]];
+    // 第一季沒有總經事件：開局先公布下季預告，讓大家有一季時間佈局
+    var m = s.forecast ? D.macro[s.forecast[R.int(s, 2)]] : { id: -1, all: 0, score: 0 };
     s.macro = m.id;
-    ev.push({ t: 'macro', id: m.id });
-    var pct = [];
-    for (i = 0; i < NC; i++) pct.push(fxPct(m, D.companies[i]));
-    applyEvent(s, pct, 'macro', ev);
+    if (m.id >= 0) {
+      ev.push({ t: 'macro', id: m.id });
+      var pct = [];
+      for (i = 0; i < NC; i++) pct.push(fxPct(m, D.companies[i]));
+      applyEvent(s, pct, 'macro', ev);
+    }
 
     // 開盤波動：題材餘溫 + 個股隨機 + 向合理價靠攏；合理價長期成長
     var changes = [];
@@ -897,7 +964,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       var tr = s.trend[c.sector] || 0;
       var noise = (R.next(s) + R.next(s) - 1) * K.vol[c.vol];
       var rev = clamp(K.rev * (s.fair[i] / from - 1), -K.revClamp, K.revClamp);
-      var to = clampPrice(from * (1 + tr + noise + rev));
+      // 股價跟著合理價一起長期成長，回歸項只處理偏離，避免股價長期落後合理價
+      var to = clampPrice(from * (1 + K.growth[c.sector] * (K.priceDrift || 0) + tr + noise + rev));
       s.fair[i] *= (1 + K.growth[c.sector]) * (1 + tr * K.fairShare);
       if (to !== from) { s.prices[i] = to; changes.push({ cid: i, from: from, to: to }); }
     }
@@ -909,19 +977,34 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     }
 
     var idx = marketIndex(s), last = s.indexHist[s.indexHist.length - 1];
-    var chg = idx / last - 1;
-    s.regime = chg > K.regimeTh ? 'bull' : chg < -K.regimeTh ? 'bear' : 'flat';
+    var before = s.score;
+    s.score += Math.round(m.score * (K.scoreScale || 1));
+    s.score += s.score > K.scoreMid ? -K.scoreDrift : s.score < K.scoreMid ? K.scoreDrift : 0;
+    s.score = clamp(s.score, K.scoreMin, K.scoreMax);
+    s.regime = regimeOf(s.score);
+    s.flipped = false;
+    s.cardHit = {};
     s.indexHist.push(idx);
+    s.scoreHist.push(s.score);
     s.stats.regimes[s.regime]++;
-    ev.push({ t: 'regime', regime: s.regime, from: last, to: idx });
+    ev.push({ t: 'regime', regime: s.regime, from: last, to: idx, score: s.score, scoreFrom: before });
+    if (s.quarter < s.quarters) {
+      var fa = R.int(s, D.macro.length), fb = R.int(s, D.macro.length - 1);
+      if (fb >= fa) fb++;
+      s.forecast = [fa, fb];
+      ev.push({ t: 'forecast', a: fa, b: fb });
+    } else s.forecast = null;
 
     beginTurn(s, ev);
   }
 
+  function regimeOf(score) { return score >= K.scoreBull ? 'bull' : score <= K.scoreBear ? 'bear' : 'flat'; }
+  function rules(s) { return K.regimeRules[s.regime]; }
+
   function beginTurn(s, ev) {
     s.phase = 'pre';
     s.pending = null;
-    s.ctx = { dice: null, allow: [], rolled: false };
+    s.ctx = { dice: null, allow: [], rolled: false, extraBuy: 0, noPremium: false, treasury: false };
     ev.push({ t: 'turn', p: s.turn });
   }
 
@@ -940,25 +1023,27 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   // 年底發放：每張持股的股息，加上大股東持股市值的 5%（權益報酬）
   function yearPayout(s, ev) {
     for (var i = 0; i < s.players.length; i++) {
-      var p = s.players[i], div = 0, majVal = 0;
+      var p = s.players[i], div = 0, majVal = 0, interest = Math.round(p.cash * K.cashRate);
       for (var c = 0; c < NC; c++) {
         if (!p.holdings[c]) continue;
         div += p.holdings[c] * D.companies[c].div;
         if (s.major[c] === i) majVal += p.holdings[c] * lotValue(s, c);
       }
       var divExtra = div > 0 && hasActive(p, 'highdiv') ? Math.round(div * (K.highdivMult - 1)) : 0;
-      var maj = Math.round(majVal * K.majorYield);
+      var maj = Math.round(majVal * K.majorYield), cut = 0;
+      if (p.audited) { cut = Math.round(maj * K.auditCut); maj -= cut; p.audited = false; }
       var majExtra = maj > 0 && hasActive(p, 'seat') ? Math.round(maj * (K.seatMult - 1)) : 0;
       if (divExtra) cardStat(s, 'highdiv', divExtra);
       if (majExtra) cardStat(s, 'seat', majExtra);
-      var amt = div + divExtra + maj + majExtra;
-      if (!amt) continue;
+      var amt = div + divExtra + maj + majExtra + interest;
+      if (!amt) { if (cut) ev.push({ t: 'payout', p: i, year: s.quarter / 4, div: 0, divExtra: 0, major: 0, majorExtra: 0, audited: cut, interest: 0 }); continue; }
       p.cash += amt;
       p.divGot = (p.divGot || 0) + div + divExtra;
+      p.interestGot = (p.interestGot || 0) + interest;
       p.majorGot = (p.majorGot || 0) + maj + majExtra;
       s.stats.dividends += div + divExtra;
       s.stats.majorReturn += maj + majExtra;
-      ev.push({ t: 'payout', p: i, year: s.quarter / 4, div: div + divExtra, divExtra: divExtra, major: maj + majExtra, majorExtra: majExtra });
+      ev.push({ t: 'payout', p: i, year: s.quarter / 4, div: div + divExtra, divExtra: divExtra, major: maj + majExtra, majorExtra: majExtra, audited: cut, interest: interest });
     }
   }
   function endQuarter(s, ev) {
@@ -1013,17 +1098,46 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     for (var i = 0; i < K.settleDraw; i++) drawCard(s, pid, ev);
   }
 
+  // 依牌堆張數加權，隨機產生卡片種類（卡片交易所的貨架用，不動到牌堆）
+  function randomType(s) {
+    var pool = [], k;
+    for (k in D.cards) for (var n = 0; n < D.cards[k].count; n++) pool.push(k);
+    return pool[R.int(s, pool.length)];
+  }
+  function takeType(s) {
+    if (!s.cardDeck.length) {
+      s.cardDeck = R.shuffle(s, s.cardDiscard.filter(function (x) { return D.cards[x].count > 0; }));
+      s.cardDiscard = [];
+    }
+    return s.cardDeck.length ? s.cardDeck.pop() : randomType(s);
+  }
+  function openShop(s, pid, n, buys, landed, ev) {
+    var cards = [];
+    for (var i = 0; i < n; i++) cards.push(randomType(s));
+    s.ctx.shop = { cards: cards, left: buys, landed: landed };
+    ev.push({ t: 'shop', p: pid, cards: cards.slice(), left: buys, landed: landed });
+  }
+  function randomCompanyMove(s, pid, kind, ev) {
+    var cid = R.int(s, NC), die = 1 + R.int(s, 6), pc = ((kind === 'brief' ? K.briefBase : K.ritualBase) + die) * (kind === 'brief' ? 1 : -1), pct = [];
+    for (var i = 0; i < NC; i++) pct.push(i === cid ? pc / 100 : 0);
+    ev.push({ t: 'cellfx', p: pid, kind: kind, cid: cid, die: die, pct: pc });
+    applyEvent(s, pct, kind, ev);
+  }
+
   function doMove(s, ev) {
     var pid = s.turn, p = s.players[pid];
-    var steps = s.ctx.dice[0] + s.ctx.dice[1], from = p.pos;
+    var steps = s.ctx.dice.reduce(function (a, b) { return a + b; }, 0), from = p.pos;
     p.pos = (from + steps) % NB;
     ev.push({ t: 'move', p: pid, from: from, to: p.pos, steps: steps });
     if (from + steps >= NB) settle(s, pid, ev);
+    var passedShop = false;
+    for (var st = 1; st < steps; st++) if (D.board[(from + st) % NB].type === 'shop') passedShop = true;
     var cell = D.board[p.pos];
     s.phase = 'act';
     ev.push({ t: 'land', p: pid, cell: p.pos });
     s.stats.landings[cell.type] = (s.stats.landings[cell.type] || 0) + 1;
     var i, pct;
+    if (passedShop && cell.type !== 'shop') openShop(s, pid, K.shopPass, K.shopPassBuy, false, ev);
     switch (cell.type) {
       case 'company':
         s.ctx.allow.push({ any: false, cid: cell.cid, left: K.buyCap, mleft: K.mergeCap, src: 'land' });
@@ -1039,6 +1153,21 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       case 'card':
         drawCard(s, pid, ev);
         break;
+      case 'meeting':
+        s.ctx.meeting = [takeType(s), takeType(s)];
+        ev.push({ t: 'meeting', p: pid, cards: s.ctx.meeting.slice() });
+        break;
+      case 'shop':
+        openShop(s, pid, K.shopLand, K.shopLandBuy, true, ev);
+        break;
+      case 'cb':
+        s.ctx.cb = true;
+        ev.push({ t: 'cb_ask', p: pid });
+        break;
+      case 'brief':
+      case 'ritual':
+        randomCompanyMove(s, pid, cell.type, ev);
+        break;
       case 'rest':
         addCash(s, pid, K.restBonus, 'rest', ev);
         break;
@@ -1051,6 +1180,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
         pct = [];
         for (i = 0; i < NC; i++) pct.push(fxPct(sw, D.companies[i]));
         applyEvent(s, pct, 'swan', ev);
+        s.score = clamp(s.score + Math.round(sw.score * K.swanScoreShare), K.scoreMin, K.scoreMax);
         break;
     }
   }
@@ -1091,13 +1221,15 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   function buyMult(s, pid, cid) {
     var p = s.players[pid], m = 1;
     if (insider(s, pid, cid)) m = 1 - K.insiderDisc;
-    if (hasActive(p, 'value') && tag(s, cid) === 'cheap') m = Math.min(m, 1 - K.valueDisc);
-    if (hasActive(p, 'contra') && s.regime === 'bear') m = Math.min(m, 1 - K.contraDisc);
+    if (s.ctx && s.ctx.treasury && s.turn === pid && s.major[cid] === pid) m = Math.min(m, 1 - K.treasuryDisc);
+    if (rules(s).buyDisc) m = Math.min(m, 1 - rules(s).buyDisc);
+    void p;
     return m;
   }
   function unitCost(s, pid, cid) { return Math.round(lotValue(s, cid) * buyMult(s, pid, cid)); }
   // 遠端下單不能買自己正站著的那家公司
   function blocked(s, x, cid) {
+    if (x.src === 'treasury') return s.major[cid] !== s.turn;
     if (x.src !== 'remote') return false;
     var cell = D.board[s.players[s.turn].pos];
     return cell.type === 'company' && cell.cid === cid;
@@ -1108,8 +1240,15 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   function fits(s, x, cid, key) { var b = bound(x, key); return b === cid || (x.any && b === -1 && !blocked(s, x, cid)); }
   function quota(s, cid, key) {
     if (!s.ctx) return 0;
-    var a = 0;
-    for (var i = 0; i < s.ctx.allow.length; i++) if (fits(s, s.ctx.allow[i], cid, key)) a += s.ctx.allow[i][key] || 0;
+    var a = 0, ok = false;
+    for (var i = 0; i < s.ctx.allow.length; i++) {
+      var x = s.ctx.allow[i];
+      if (!fits(s, x, cid, key)) continue;
+      if (x[key] !== undefined) ok = true;
+      a += x[key] || 0;
+    }
+    // 增資認購：只要這家公司這回合本來就能一般買進，就多出額外張數
+    if (key === 'left' && ok) a += s.ctx.extraBuy || 0;
     return a;
   }
   function useQuota(s, cid, qty, key) {
@@ -1121,11 +1260,14 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       x[key] -= take;
       qty -= take;
     }
+    if (key === 'left' && qty > 0) s.ctx.extraBuy -= Math.min(qty, s.ctx.extraBuy);
   }
   function allowance(s, cid) { return quota(s, cid, 'left'); }
   function mergeAllowance(s, cid) { return quota(s, cid, 'mleft'); }
   // 併購：用市價加 10% 向其他玩家買他手上的股票，溢價付給對方
-  function mergeUnit(s, cid) { return Math.round(lotValue(s, cid) * (1 + K.mergePremium)); }
+  function mergePremium(s) { return s.ctx && s.ctx.noPremium ? 0 : rules(s).premium; }
+  function sellFee(s) { return rules(s).sellFee; }
+  function mergeUnit(s, cid) { return Math.round(lotValue(s, cid) * (1 + mergePremium(s))); }
   function maxMerge(s, pid, cid, from) {
     if (s.turn !== pid || (s.phase !== 'pre' && s.phase !== 'act') || from === pid || !s.players[from]) return 0;
     return Math.min(mergeAllowance(s, cid), s.players[from].holdings[cid], Math.floor(s.players[pid].cash / mergeUnit(s, cid)));
@@ -1145,7 +1287,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   };
   function rollDice(s, ev, re) {
     var p = s.players[s.turn];
-    s.ctx.dice = s.ctx.nd === 1 ? [1 + R.int(s, 6), 0] : [1 + R.int(s, 6), 1 + R.int(s, 6)];
+    var nd = s.ctx.nd || 2;
+    s.ctx.dice = [1 + R.int(s, 6), nd >= 2 ? 1 + R.int(s, 6) : 0];
+    if (nd === 3) s.ctx.dice.push(1 + R.int(s, 6));
     ev.push({ t: 'dice', p: s.turn, d: s.ctx.dice.slice(), reroll: re });
     var has = false;
     for (var i = 0; i < p.hand.length; i++) if (p.hand[i].type === 'reroll') has = true;
@@ -1186,10 +1330,6 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     p.cash -= cost;
     p.costBasis[cid] += cost;
     p.holdings[cid] += qty;
-    if (full > cost && !insider(s, pid, cid)) {
-      var by = hasActive(p, 'contra') && s.regime === 'bear' ? 'contra' : 'value';
-      cardStat(s, by, full - cost);
-    }
     s.stats.bought[cid] += qty;
     ev.push({ t: 'buy', p: pid, cid: cid, qty: qty, cost: cost, saved: full - cost });
     updateMajor(s, cid, ev);
@@ -1216,12 +1356,47 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     updateMajor(s, cid, ev);
   };
 
+  H.SHOP_BUY = function (s, c, ev) {
+    if (s.phase !== 'act' || !s.ctx.shop) return '現在不能買卡';
+    var sh = s.ctx.shop, p = s.players[s.turn];
+    if (sh.left <= 0) return '這次已經買滿了';
+    if (!(c.idx >= 0 && c.idx < sh.cards.length) || !sh.cards[c.idx]) return '這張卡已經賣掉了';
+    if (p.cash < K.shopPrice) return '現金不足';
+    var type = sh.cards[c.idx];
+    sh.cards[c.idx] = null;
+    sh.left--;
+    p.cash -= K.shopPrice;
+    var card = { uid: s.uid++, type: type };
+    p.hand.push(card);
+    s.stats.shopBuys = (s.stats.shopBuys || 0) + 1;
+    ev.push({ t: 'shop_buy', p: s.turn, card: type, uid: card.uid, cost: K.shopPrice, idx: c.idx });
+  };
+  H.MEETING_PICK = function (s, c, ev) {
+    if (s.phase !== 'act' || !s.ctx.meeting) return '現在沒有策略會議';
+    var m = s.ctx.meeting;
+    if (c.idx !== 0 && c.idx !== 1) return '請選一張卡';
+    var card = { uid: s.uid++, type: m[c.idx] };
+    s.players[s.turn].hand.push(card);
+    s.cardDiscard.push(m[1 - c.idx]);
+    s.ctx.meeting = null;
+    ev.push({ t: 'meeting_pick', p: s.turn, card: card.type, uid: card.uid, drop: m[1 - c.idx] });
+  };
+  H.CB = function (s, c, ev) {
+    if (s.phase !== 'act' || !s.ctx.cb) return '現在不能決定央行政策';
+    if (c.dir !== 1 && c.dir !== -1) return '請選擇升息或降息';
+    var from = s.score, before = s.regime;
+    s.score = clamp(s.score + c.dir * K.cbStep, K.scoreMin, K.scoreMax);
+    if (!s.flipped) s.regime = regimeOf(s.score);
+    s.ctx.cb = false;
+    ev.push({ t: 'cb', p: s.turn, dir: c.dir, from: from, score: s.score, regime: s.regime, regimeFrom: before });
+  };
+
   H.SELL = function (s, c, ev) {
     if (s.phase !== 'pre' && s.phase !== 'act') return '現在不能賣出';
     var cid = c.cid, qty = c.qty, pid = s.turn, p = s.players[pid];
     if (!(cid >= 0 && cid < NC) || !(qty > 0) || qty !== Math.floor(qty)) return '賣出內容不正確';
     if (p.holdings[cid] < qty) return '持股不足';
-    var gain = Math.round(lotValue(s, cid) * qty * (1 - K.sellFee));
+    var gain = Math.round(lotValue(s, cid) * qty * (1 - sellFee(s)));
     p.costBasis[cid] = Math.round((p.costBasis[cid] * (p.holdings[cid] - qty)) / p.holdings[cid]);
     p.holdings[cid] -= qty;
     p.cash += gain;
@@ -1230,51 +1405,66 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     updateMajor(s, cid, ev);
   };
 
+  // 這張卡現在能不能出（不含指定步數、對象這類參數的檢查）
+  function canPlay(s, pid, type) {
+    if (s.turn !== pid) return false;
+    var def = D.cards[type], ph = s.phase, cell = D.board[s.players[pid].pos];
+    if (!def) return false;
+    if (def.when === 'pre' && ph !== 'pre') return false;
+    if (def.when === 'rolled' && ph !== 'rolled') return false;
+    if (def.when === 'turn' && ph !== 'pre' && ph !== 'act') return false;
+    if (def.when === 'act' && ph !== 'act') return false;
+    if (type === 'bear' || type === 'bull') return cell.type === 'company' && !s.cardHit[D.companies[cell.cid].sector];
+    if (type === 'treasury') { for (var i = 0; i < NC; i++) if (s.major[i] === pid) return !s.ctx.treasury; return false; }
+    if (type === 'flip') return s.regime !== 'flat' && !s.flipped;
+    if (type === 'hostile') return !s.ctx.noPremium;
+    return true;
+  }
   H.PLAY_CARD = function (s, c, ev) {
     var pid = s.turn, p = s.players[pid], hi = -1, i;
     for (i = 0; i < p.hand.length; i++) if (p.hand[i].uid === c.uid) hi = i;
     if (hi < 0) return '手上沒有這張卡';
     var type = p.hand[hi].type, def = D.cards[type];
-    if (type === 'reroll') {
-      if (s.phase !== 'rolled') return '這張卡要在擲骰後、移動前使用';
-      p.hand.splice(hi, 1);
-      s.cardDiscard.push(type);
-      playStat(s, type);
-      ev.push({ t: 'play', p: pid, card: type });
-      rollDice(s, ev, true);
-      return;
-    }
-    if (s.phase !== 'pre' && s.phase !== 'act') return '現在不能出卡';
-    if (type === 'remote') {
-      p.hand.splice(hi, 1);
-      s.cardDiscard.push(type);
-      s.ctx.allow.push({ any: true, cid: -1, left: K.remoteCap, src: 'remote' }); // 遠端下單只能一般買進，不能併購
-      playStat(s, type);
-      ev.push({ t: 'play', p: pid, card: type });
-      return;
-    }
-    var sector = null;
-    if (def.needSector) {
-      if (!D.sectorById(c.sector)) return '請選擇一個產業';
-      sector = c.sector;
-    }
-    var same = -1, replaced = null;
-    for (i = 0; i < p.active.length; i++) if (p.active[i].type === type) same = i;
-    if (same >= 0) {
-      replaced = p.active[same].type;
-      p.active.splice(same, 1);
-    } else if (p.active.length >= K.activeMax) {
-      var ri = -1;
-      for (i = 0; i < p.active.length; i++) if (p.active[i].type === c.replace) ri = i;
-      if (ri < 0) return '生效中的卡已滿，請選一張換掉';
-      replaced = p.active[ri].type;
-      p.active.splice(ri, 1);
-    }
-    if (replaced) s.cardDiscard.push(replaced);
+    if (!canPlay(s, pid, type)) return '現在不能出「' + def.name + '」';
+    if (type === 'pick' && !(c.steps >= 1 && c.steps <= 6 && c.steps === Math.floor(c.steps))) return '請選要走幾步';
+    if (type === 'audit' && !(c.target >= 0 && c.target < s.players.length && c.target !== pid)) return '請選一位對手';
     p.hand.splice(hi, 1);
-    p.active.push({ type: type, left: K.cardDur, sector: sector });
+    s.cardDiscard.push(type);
     playStat(s, type);
-    ev.push({ t: 'play', p: pid, card: type, sector: sector, replaced: replaced });
+    var e = { t: 'play', p: pid, card: type };
+    ev.push(e);
+    var cell = D.board[p.pos];
+    switch (type) {
+      case 'reroll': rollDice(s, ev, true); break;
+      case 'pick':
+        e.steps = c.steps;
+        s.ctx.dice = [c.steps, 0];
+        doMove(s, ev);
+        break;
+      case 'triple': s.ctx.nd = 3; rollDice(s, ev, false); break;
+      case 'remote': s.ctx.allow.push({ any: true, cid: -1, left: K.remoteCap, src: 'remote' }); break;
+      case 'capital': s.ctx.extraBuy += K.capitalExtra; break;
+      case 'treasury':
+        s.ctx.treasury = true;
+        s.ctx.allow.push({ any: true, cid: -1, left: K.treasuryCap, src: 'treasury' });
+        break;
+      case 'hostile': s.ctx.noPremium = true; break;
+      case 'tender': s.ctx.allow.push({ any: true, cid: -1, mcid: -1, mleft: K.tenderCap, src: 'tender' }); break;
+      case 'audit': s.players[c.target].audited = true; e.target = c.target; break;
+      case 'flip':
+        s.regime = s.regime === 'bull' ? 'bear' : 'bull';
+        s.flipped = true;
+        e.regime = s.regime;
+        break;
+      case 'bear':
+      case 'bull':
+        var sec = D.companies[cell.cid].sector, die = 1 + R.int(s, 6), pc = (K.sectorCardBase + die) * (type === 'bull' ? 1 : -1), pct = [];
+        s.cardHit[sec] = true;
+        for (i = 0; i < NC; i++) pct.push(D.companies[i].sector === sec ? pc / 100 : 0);
+        e.sector = sec; e.die = die; e.pct = pc;
+        applyEvent(s, pct, 'card', ev);
+        break;
+    }
   };
   function playStat(s, type) {
     var st = s.stats.cards[type] || (s.stats.cards[type] = { plays: 0, gain: 0 });
@@ -1297,6 +1487,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 
   H.END_TURN = function (s, c, ev) {
     if (s.phase !== 'act') return '還不能結束回合';
+    if (s.ctx.meeting) return '請先在策略會議選一張卡';
+    if (s.ctx.cb) return '請先決定央行要讓景氣分數加還是減';
     if (s.players[s.turn].hand.length > K.handMax) return '手牌超過 ' + K.handMax + ' 張，請先出卡或棄卡';
     s.order++;
     if (s.order >= s.players.length) endQuarter(s, ev);
@@ -1334,14 +1526,14 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
         return {
           id: i, name: p.name, kind: p.kind || 'ai', style: p.style || null,
           cash: startCash, pos: 0, holdings: z, costBasis: z2, hand: [], active: [],
-          laps: 0, sold: false, divGot: 0, majorGot: 0, history: [startCash]
+          laps: 0, sold: false, audited: false, divGot: 0, majorGot: 0, interestGot: 0, history: [startCash]
         };
       }),
       prices: D.companies.map(function (c) { return c.price0; }),
       fair: D.companies.map(function (c) { return c.price0; }),
       prevClose: D.companies.map(function (c) { return c.price0; }),
       sum0: D.companies.reduce(function (a, c) { return a + c.price0; }, 0),
-      closeHist: { all: [100] }, trend: {}, regime: 'flat', macro: -1, indexHist: [10000],
+      closeHist: { all: [100] }, trend: {}, regime: 'flat', score: K.scoreStart, scoreHist: [K.scoreStart], flipped: false, cardHit: {}, forecast: null, macro: -1, indexHist: [10000],
       macroDeck: [], newsDeck: [], swanDeck: [], cardDeck: [], cardDiscard: [], uid: 1,
       major: [], pending: null, ctx: null, result: null, cmdCount: 0,
       stats: { cards: {}, regimes: { bull: 0, flat: 0, bear: 0 }, landings: {}, dividends: 0, majorReturn: 0, pumps: 0, insiders: 0, merges: 0, bought: [] }
@@ -1376,6 +1568,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     total: total, holdingsValue: holdingsValue, marketIndex: marketIndex, tag: tag,
     hasActive: hasActive, unitCost: unitCost, buyMult: buyMult, allowance: allowance, maxBuy: maxBuy,
     mergeAllowance: mergeAllowance, mergeUnit: mergeUnit, maxMerge: maxMerge,
+    mergePremium: mergePremium, sellFee: sellFee, canPlay: canPlay, regimeOf: regimeOf,
     lotValue: lotValue, ranking: ranking, insider: insider
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
@@ -1393,9 +1586,10 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   var VOLN = { L: 0, M: 0.5, H: 1 };
 
   var STYLES = {
-    conservative: { reserve: 0.2, cap: 0.24, th: 0.3, prefer: ['highdiv', 'lowvol', 'hedge', 'discipline', 'value', 'contra', 'seat', 'rotate', 'momentum', 'remote', 'reroll'] },
-    aggressive: { reserve: 0.06, cap: 0.45, th: 0.15, prefer: ['momentum', 'rotate', 'contra', 'remote', 'value', 'seat', 'lowvol', 'highdiv', 'reroll', 'discipline', 'hedge'] },
-    follower: { reserve: 0.05, cap: 0.35, th: 0, prefer: ['momentum', 'rotate', 'highdiv', 'value', 'lowvol', 'contra', 'discipline', 'seat', 'remote', 'hedge', 'reroll'] },
+    // 保守型：偏好高股息、低波動，但會依經濟預告換股；多頭多留現金、空頭趁折扣買進，喜歡當大股東領權益報酬
+    conservative: { reserve: 0.15, cap: 0.35, th: 0.2, trendW: 8, resBull: 0.25, resBear: 0.08, sellTh: -0.02, sellRich: 1.25, majorW: 0.3, bullTake: 0, prefer: ['remote', 'treasury', 'pick', 'capital', 'audit', 'tender', 'hostile', 'bull', 'flip', 'reroll', 'triple', 'bear'] },
+    aggressive: { reserve: 0.06, cap: 0.45, th: 0.15, prefer: ['tender', 'hostile', 'pick', 'triple', 'capital', 'remote', 'bear', 'bull', 'audit', 'treasury', 'flip', 'reroll'] },
+    follower: { reserve: 0.05, cap: 0.35, th: 0, prefer: ['pick', 'remote', 'capital', 'bull', 'tender', 'hostile', 'treasury', 'audit', 'triple', 'flip', 'bear', 'reroll'] },
     random: { reserve: 0, cap: 1, th: -99, prefer: [] },
     cash: { reserve: 1, cap: 0, th: 99, prefer: [] },
     buyall: { reserve: 0, cap: 1, th: -99, prefer: [] },
@@ -1407,14 +1601,27 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   function cl(x, a, b) { return x < a ? a : x > b ? b : x; }
   function baseStyle(st) { return st && st.indexOf('sector:') === 0 ? 'sector' : st || 'follower'; }
 
+  function forecastPct(s, sector) {
+    if (!s.forecast) return 0;
+    var v = 0;
+    s.forecast.forEach(function (id) {
+      var m = D.macro[id];
+      v += (m.sectors && m.sectors[sector] !== undefined ? m.sectors[sector] : m.all || 0) / 100;
+    });
+    return v / s.forecast.length;
+  }
   function score(s, pid, cid, style) {
     var c = D.companies[cid], price = s.prices[cid];
     var yieldN = c.div / (price * 100) / 0.05;
     var volN = VOLN[c.vol];
     var mom = cl(price / s.prevClose[cid] - 1, -0.2, 0.2);
     var cheap = cl(s.fair[cid] / price - 1, -0.3, 0.3);
-    var trend = s.trend[c.sector] || 0;
-    if (style === 'conservative') return 0.9 * yieldN - 0.5 * volN + 2 * cheap + 2 * trend;
+    var trend = (s.trend[c.sector] || 0) + forecastPct(s, c.sector);
+    if (style === 'conservative') {
+      var cc = STYLES.conservative, mb = 0;
+      if (cc.majorW) { var top = 0; for (var j = 0; j < s.players.length; j++) if (j !== pid) top = Math.max(top, s.players[j].holdings[cid]); if (s.major[cid] === pid || s.players[pid].holdings[cid] + K.buyCap > top) mb = cc.majorW; }
+      return 0.9 * yieldN - (cc.volW === undefined ? 0.5 : cc.volW) * volN + 2 * cheap + cc.trendW * trend + mb;
+    }
     if (style === 'aggressive') return 0.4 * volN + 4 * trend + 1.5 * cheap + 1.0 * mom;
     if (style === 'follower') {
       var pop = 0;
@@ -1433,7 +1640,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     } else if (score(s, pid, cid, st) < cfg.th) return 0;
     var tot = E.total(s, pid);
     var reserve = cfg.reserve;
-    if (st === 'conservative' && s.regime === 'bear') reserve += 0.1;
+    if (st === 'conservative') reserve = s.regime === 'bear' ? cfg.resBear : s.regime === 'bull' ? cfg.resBull : cfg.reserve;
     var spendable = p.cash - Math.round(tot * reserve);
     var unit = E.unitCost(s, pid, cid);
     var room = Math.floor((tot * cfg.cap - p.holdings[cid] * s.prices[cid] * 100) / unit);
@@ -1448,9 +1655,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     for (var i = 0; i < NC; i++) {
       if (!p.holdings[i]) continue;
       var c = D.companies[i], r = s.prices[i] / s.fair[i];
-      var mom = s.prices[i] / s.prevClose[i] - 1, tr = s.trend[c.sector] || 0;
+      var mom = s.prices[i] / s.prevClose[i] - 1, tr = (s.trend[c.sector] || 0) + forecastPct(s, c.sector);
       var sell = false;
-      if (st === 'conservative') sell = r > 1.25 || (s.regime === 'bear' && c.vol === 'H' && tr < 0);
+      if (st === 'conservative') { var cs = STYLES.conservative; sell = r > cs.sellRich || tr < cs.sellTh || (cs.bullTake && s.regime === 'bull' && r > cs.bullTake) || (s.regime === 'bear' && c.vol === 'H' && tr < 0); }
       else if (st === 'aggressive') sell = r > 1.35 || tr < -0.035;
       else sell = tr < -0.035;
       if (sell) return { type: 'SELL', player: pid, cid: i, qty: p.holdings[i] };
@@ -1469,41 +1676,118 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return best;
   }
 
+  var OFFICIAL = { conservative: 1, aggressive: 1, follower: 1 };
+  var NB = D.board.length;
+  function card(p, type) { for (var i = 0; i < p.hand.length; i++) if (p.hand[i].type === type) return p.hand[i]; return null; }
+  function distToStart(p) { return (NB - p.pos) % NB || NB; }
+  function sectorValue(s, pid, sec) {
+    var v = 0;
+    for (var i = 0; i < NC; i++) if (D.companies[i].sector === sec) v += s.players[pid].holdings[i] * s.prices[i] * 100;
+    return v;
+  }
+  // 不考慮這回合的張數上限，最多想買幾張
+  function wantQty(s, pid, cid) {
+    var p = s.players[pid], st = baseStyle(p.style), cfg = STYLES[st];
+    if (score(s, pid, cid, st) < cfg.th) return 0;
+    var tot = E.total(s, pid), unit = E.unitCost(s, pid, cid);
+    var spend = p.cash - Math.round(tot * (st === 'conservative' ? (s.regime === 'bear' ? cfg.resBear : s.regime === 'bull' ? cfg.resBull : cfg.reserve) : cfg.reserve));
+    var room = Math.floor((tot * cfg.cap - p.holdings[cid] * s.prices[cid] * 100) / unit);
+    return Math.max(0, Math.min(Math.floor(spend / unit), room));
+  }
+  // 指定骰：每個落點打分數
+  function cellValue(s, pid, k) {
+    var p = s.players[pid], st = baseStyle(p.style), cell = D.board[(p.pos + k) % NB], v = 0;
+    var stockW = E.holdingsValue(s, pid) / E.total(s, pid);
+    if (p.pos + k >= NB) v += 0.8;
+    if (cell.type === 'company') {
+      if (s.major[cell.cid] === pid) v += 2;
+      else if (score(s, pid, cell.cid, st) >= STYLES[st].th) v += 1 + Math.min(1, score(s, pid, cell.cid, st));
+    } else if (cell.type === 'broker') v += 1.3;
+    else if (cell.type === 'card') v += 0.8;
+    else if (cell.type === 'swan') v += stockW > 0.4 ? -2 : 0;
+    else v += 0.3;
+    return v;
+  }
+  // 能不能靠併購（最多 cap 張）拿下大股東；ignoreQuota 用來判斷要不要先出公開收購
+  function findMerge(s, pid, cap, ignoreQuota) {
+    var p = s.players[pid], st = baseStyle(p.style), cfg = STYLES[st];
+    var tot = E.total(s, pid), spend = p.cash - tot * cfg.reserve, maxK = st === 'conservative' ? 6 : K.mergeCap;
+    for (var cid = 0; cid < NC; cid++) {
+      var ma = ignoreQuota ? cap : E.mergeAllowance(s, cid);
+      if (ma <= 0 || s.major[cid] === pid || score(s, pid, cid, st) < cfg.th) continue;
+      var tgt = -1, th = 0, i;
+      for (i = 0; i < s.players.length; i++) if (i !== pid && s.players[i].holdings[cid] > th) { th = s.players[i].holdings[cid]; tgt = i; }
+      if (tgt < 0) continue;
+      var other = 0;
+      for (i = 0; i < s.players.length; i++) if (i !== pid && i !== tgt) other = Math.max(other, s.players[i].holdings[cid]);
+      var mine = p.holdings[cid], need = 0;
+      for (var k = 1; k <= Math.min(ma, th, maxK); k++) {
+        var a = mine + k;
+        if (a >= K.majorMin && a > th - k && a > other) { need = k; break; }
+      }
+      if (!need || need * E.mergeUnit(s, cid) > spend) continue;
+      return { type: 'MERGE', player: pid, cid: cid, from: tgt, qty: need };
+    }
+    return null;
+  }
+
   // 回傳要出的卡（指令）或 null
   function wantPlay(s, pid) {
-    var p = s.players[pid], st = baseStyle(p.style), cfg = STYLES[st];
-    if (!cfg.prefer.length || !p.hand.length) return null;
-    var tot = E.total(s, pid), hv = E.holdingsValue(s, pid), stockW = hv / tot, cashW = p.cash / tot;
-    var left = s.quarters - s.quarter + 1;
-    var order = p.hand.slice().sort(function (a, b) { return cfg.prefer.indexOf(a.type) - cfg.prefer.indexOf(b.type); });
-    for (var i = 0; i < order.length; i++) {
-      var c = order[i], t = c.type, ok = false, cmd = { type: 'PLAY_CARD', player: pid, uid: c.uid };
-      if (t === 'reroll') continue;
-      if (E.hasActive(p, t)) continue;
-      if (t === 'remote') {
-        if (s.phase !== 'act') continue;
-        var best = bestRemote(s, pid);
-        ok = best >= 0;
-      } else if (t === 'highdiv') ok = stockW > 0.3;
-      else if (t === 'momentum') ok = stockW > 0.4;
-      else if (t === 'lowvol') ok = stockW > 0.45;
-      else if (t === 'value') ok = cashW > 0.12;
-      else if (t === 'hedge') ok = cashW > 0.25;
-      else if (t === 'contra') ok = cashW > 0.12 && (s.regime === 'bear' || p.hand.length >= K.handMax);
-      else if (t === 'discipline') ok = stockW > 0.2;
-      else if (t === 'seat') ok = majors(s, pid) >= 1;
-      else if (t === 'rotate') {
-        var sec = topSector(s, pid);
-        if (sec) { ok = true; cmd.sector = sec; }
-      }
-      if (!ok) continue;
-      if (D.cards[t].kind === 'lasting' && p.active.length >= K.activeMax) {
-        if (p.hand.length < K.handMax) continue;
-        var lo = p.active[0];
-        for (var j = 1; j < p.active.length; j++) if (p.active[j].left < lo.left) lo = p.active[j];
-        cmd.replace = lo.type;
-      }
+    var p = s.players[pid], st = baseStyle(p.style);
+    if (!OFFICIAL[st] || !p.hand.length) return null;
+    var tot = E.total(s, pid), stockW = E.holdingsValue(s, pid) / tot, cashW = p.cash / tot, i, k;
+    function play(type, extra) {
+      var c = card(p, type);
+      if (!c || !E.canPlay(s, pid, type)) return null;
+      var cmd = { type: 'PLAY_CARD', player: pid, uid: c.uid };
+      for (var key in extra || {}) cmd[key] = extra[key];
       return cmd;
+    }
+    var cmd;
+    if (s.phase === 'pre') {
+      if (card(p, 'pick')) {
+        var bk = 0, bv = -9;
+        for (k = 1; k <= 6; k++) { var cv = cellValue(s, pid, k); if (cv > bv) { bv = cv; bk = k; } }
+        if (bv >= 1.8 && (cmd = play('pick', { steps: bk }))) return cmd;
+      }
+      var d = distToStart(p);
+      if (card(p, 'triple') && d >= 9 && d <= 15 && (cmd = play('triple'))) return cmd;
+    }
+    if (s.phase === 'pre' || s.phase === 'act') {
+      if (card(p, 'flip')) {
+        if (s.regime === 'bull' && cashW > 0.3 && st !== 'aggressive' && (cmd = play('flip'))) return cmd;
+        if (s.regime === 'bear' && stockW > 0.8 && st === 'aggressive' && (cmd = play('flip'))) return cmd;
+      }
+      if (card(p, 'audit')) {
+        var tg = -1, tv = 250000;
+        for (i = 0; i < s.players.length; i++) {
+          if (i === pid || s.players[i].audited) continue;
+          var mv = 0;
+          for (var c = 0; c < NC; c++) if (s.major[c] === i) mv += s.players[i].holdings[c] * s.prices[c] * 100;
+          if (mv > tv) { tv = mv; tg = i; }
+        }
+        if (tg >= 0 && (cmd = play('audit', { target: tg }))) return cmd;
+      }
+      if (card(p, 'treasury') && E.canPlay(s, pid, 'treasury')) {
+        for (i = 0; i < NC; i++) if (s.major[i] === pid && wantQty(s, pid, i) >= 2) return play('treasury');
+      }
+    }
+    if (s.phase === 'act') {
+      var cell = D.board[p.pos];
+      if (cell.type === 'company') {
+        var sec = D.companies[cell.cid].sector, mine = sectorValue(s, pid, sec), theirs = 0;
+        for (i = 0; i < s.players.length; i++) if (i !== pid) theirs = Math.max(theirs, sectorValue(s, i, sec));
+        if (card(p, 'bull') && mine > 100000 && mine >= theirs && (cmd = play('bull'))) return cmd;
+        if (card(p, 'bear') && theirs > mine * 2 + 100000 && (cmd = play('bear'))) return cmd;
+      }
+      if (card(p, 'tender') && findMerge(s, pid, K.tenderCap, true) && !findMerge(s, pid, 0, false) && (cmd = play('tender'))) return cmd;
+      if (card(p, 'capital') && !s.ctx.extraBuy) {
+        for (i = 0; i < NC; i++) {
+          var al = E.allowance(s, i);
+          if (al > 0 && wantQty(s, pid, i) > al && (cmd = play('capital'))) return cmd;
+        }
+      }
+      if (card(p, 'remote') && bestRemote(s, pid) >= 0) return play('remote');
     }
     return null;
   }
@@ -1523,28 +1807,10 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   }
 
   function pickMerge(s, pid) {
-    var p = s.players[pid], st = baseStyle(p.style), cfg = STYLES[st];
-    if (st !== 'conservative' && st !== 'aggressive' && st !== 'follower') return null;
-    var tot = E.total(s, pid), spend = p.cash - tot * cfg.reserve, maxK = st === 'conservative' ? 6 : K.mergeCap;
-    for (var cid = 0; cid < NC; cid++) {
-      var ma = E.mergeAllowance(s, cid);
-      if (ma <= 0 || s.major[cid] === pid || score(s, pid, cid, st) < cfg.th) continue;
-      var tgt = -1, th = 0, i;
-      for (i = 0; i < s.players.length; i++) if (i !== pid && s.players[i].holdings[cid] > th) { th = s.players[i].holdings[cid]; tgt = i; }
-      if (tgt < 0) continue;
-      var other = 0;
-      for (i = 0; i < s.players.length; i++) if (i !== pid && i !== tgt) other = Math.max(other, s.players[i].holdings[cid]);
-      var mine = p.holdings[cid], need = 0;
-      for (var k = 1; k <= Math.min(ma, th, maxK); k++) {
-        var a = mine + k;
-        if (a >= K.majorMin && a > th - k && a > other) { need = k; break; }
-      }
-      if (!need || need * E.mergeUnit(s, cid) > spend) continue;
-      return { type: 'MERGE', player: pid, cid: cid, from: tgt, qty: need };
-    }
-    return null;
+    var st = baseStyle(s.players[pid].style);
+    if (!OFFICIAL[st]) return null;
+    return findMerge(s, pid, 0, false);
   }
-
   // 由目前狀態算出的雜湊亂數（不動到遊戲亂數，重播結果不變）
   function rnd(s, pid, salt) {
     var x = (s.rng ^ Math.imul(s.cmdCount + 1, 0x9e3779b1) ^ Math.imul(pid + 1, 0x85ebca6b) ^ Math.imul(salt + 1, 0xc2b2ae35)) >>> 0;
@@ -1559,11 +1825,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     var p = s.players[pid], i;
     if (s.phase === 'pre' || s.phase === 'act') {
       // 出一張隨機的持續型卡
-      var lasting = p.hand.filter(function (c) { return D.cards[c.type].kind === 'lasting' && !E.hasActive(p, c.type); });
-      if (lasting.length && rnd(s, pid, 2) < 0.3) {
-        var c = pick(lasting, rnd(s, pid, 3)), cmd = { type: 'PLAY_CARD', player: pid, uid: c.uid };
-        if (D.cards[c.type].needSector) cmd.sector = pick(D.sectors, rnd(s, pid, 4)).id;
-        if (p.active.length >= K.activeMax) cmd.replace = pick(p.active, rnd(s, pid, 5)).type;
+      var playable = p.hand.filter(function (c) { return c.type !== 'remote' && E.canPlay(s, pid, c.type); });
+      if (playable.length && rnd(s, pid, 2) < 0.3) {
+        var c = pick(playable, rnd(s, pid, 3)), cmd = { type: 'PLAY_CARD', player: pid, uid: c.uid };
+        if (c.type === 'pick') cmd.steps = 1 + Math.floor(rnd(s, pid, 4) * 6);
+        if (c.type === 'audit') { var others = []; for (var o2 = 0; o2 < s.players.length; o2++) if (o2 !== pid) others.push(o2); cmd.target = pick(others, rnd(s, pid, 5)); }
         return cmd;
       }
     }
@@ -1587,8 +1853,22 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       return { type: 'BUY', player: pid, cid: bc, qty: 1 + Math.floor(rnd(s, pid, 13) * E.maxBuy(s, pid, bc)) };
     }
     if (!buyable.length) for (i = 0; i < p.hand.length; i++) if (p.hand[i].type === 'remote' && rnd(s, pid, 14) < 0.6) return { type: 'PLAY_CARD', player: pid, uid: p.hand[i].uid };
+    var sh = s.ctx.shop;
+    if (sh && sh.left > 0 && p.cash >= K.shopPrice && rnd(s, pid, 16) < 0.4) {
+      var avail = []; sh.cards.forEach(function (c, j) { if (c) avail.push(j); });
+      if (avail.length) return { type: 'SHOP_BUY', player: pid, idx: pick(avail, rnd(s, pid, 17)) };
+    }
     if (p.hand.length > K.handMax) return { type: 'DISCARD', player: pid, uid: pick(p.hand, rnd(s, pid, 15)).uid };
     return { type: 'END_TURN', player: pid };
+  }
+
+  function wantShop(s, pid) {
+    var p = s.players[pid], st = baseStyle(p.style), cfg = STYLES[st], sh = s.ctx.shop;
+    if (!OFFICIAL[st] || !sh || sh.left <= 0 || p.hand.length >= K.handMax) return null;
+    if (p.cash - K.shopPrice < E.total(s, pid) * cfg.reserve + K.shopPrice) return null;
+    var best = -1, bi = 99;
+    sh.cards.forEach(function (c, i) { if (!c) return; var r = cfg.prefer.indexOf(c); if (r >= 0 && r < 6 && r < bi) { bi = r; best = i; } });
+    return best >= 0 ? { type: 'SHOP_BUY', player: pid, idx: best } : null;
   }
 
   function pickBuy(s, pid) {
@@ -1606,6 +1886,18 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     var pid = E.actor(s);
     if (pid < 0) return null;
     var p = s.players[pid], st = baseStyle(p.style), cmd;
+    if (s.phase === 'act' && s.ctx.meeting) {
+      var mi = 0;
+      if (st === 'random') mi = rnd(s, pid, 21) < 0.5 ? 0 : 1;
+      else if (STYLES[st].prefer.length) mi = STYLES[st].prefer.indexOf(s.ctx.meeting[1]) >= 0 && STYLES[st].prefer.indexOf(s.ctx.meeting[1]) < STYLES[st].prefer.indexOf(s.ctx.meeting[0]) ? 1 : 0;
+      return { type: 'MEETING_PICK', player: pid, idx: mi };
+    }
+    if (s.phase === 'act' && s.ctx.cb) {
+      var dir = 1;
+      if (st === 'random') dir = rnd(s, pid, 22) < 0.5 ? 1 : -1;
+      else if (OFFICIAL[st]) dir = p.cash / E.total(s, pid) > 0.3 ? -1 : 1;
+      return { type: 'CB', player: pid, dir: dir };
+    }
     if (st === 'random' && s.phase !== 'major') return randomNext(s, pid);
     if (s.phase === 'major') {
       var mc = s.pending.cid, lot = E.lotValue(s, mc), cfg0 = STYLES[st];
@@ -1626,7 +1918,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       return { type: 'ROLL', player: pid };
     }
     if (s.phase === 'rolled') {
-      var to = (p.pos + s.ctx.dice[0] + s.ctx.dice[1]) % D.board.length;
+      var to = (p.pos + s.ctx.dice.reduce(function (a, b) { return a + b; }, 0)) % D.board.length;
       var cell = D.board[to], tot = E.total(s, pid), stockW = E.holdingsValue(s, pid) / tot;
       var bad = (cell.type === 'swan' && stockW > 0.4) || (s.quarters - s.quarter < 2 && cell.type !== 'start');
       if (bad) {
@@ -1638,8 +1930,14 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       var cid = pickBuy(s, pid);
       if (cid >= 0) return { type: 'BUY', player: pid, cid: cid, qty: wantBuy(s, pid, cid) };
       cmd = pickMerge(s, pid);
-      if (cmd) return cmd;
+      if (cmd) {
+        var hc = card(p, 'hostile');
+        if (hc && E.canPlay(s, pid, 'hostile') && cmd.qty * E.lotValue(s, cmd.cid) * E.mergePremium(s) > 20000) return { type: 'PLAY_CARD', player: pid, uid: hc.uid };
+        return cmd;
+      }
       cmd = wantPlay(s, pid);
+      if (cmd) return cmd;
+      cmd = wantShop(s, pid);
       if (cmd) return cmd;
       if (p.hand.length > K.handMax) {
         var cfg = STYLES[st], worst = p.hand[0], wi = -1;
@@ -2063,7 +2361,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   };
 
   // ---------- 棋盤 ----------
-  var SPECIAL_COLORS = { start: '#e9a81c', card: '#24459c', news: '#5b6772', broker: '#7a4fb8', rest: '#4f8f7a', swan: '#1c2530' };
+  var SPECIAL_COLORS = { start: '#e9a81c', card: '#24459c', news: '#5b6772', broker: '#7a4fb8', rest: '#4f8f7a', swan: '#1c2530', meeting: '#24459c', shop: '#0f7f86', cb: '#9a6b12', brief: '#c23b2f', ritual: '#5d4a7a' };
 
   P.buildBoard = function () {
     var scene = this.scene, self = this;
@@ -2188,8 +2486,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     var off = L.corner ? 0.3 : 0.55;
     grp.position.set(L.x + L.nx * off, L.corner ? 0.2 : 0.16, L.z + L.nz * off);
     grp.rotation.y = -this.azimuth + Math.PI / 2;
-    var top = 0.9;
-    if (cell.type === 'start') {
+    var top = 0.9, kind = { meeting: 'card', brief: 'news' }[cell.type] || cell.type;
+    if (kind === 'start') {
       m = new THREE.Mesh(new THREE.TorusGeometry(0.42, 0.07, 8, 24, Math.PI), lam('#fff6d8'));
       m.position.y = 0.02;
       grp.add(m);
@@ -2199,7 +2497,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       l2.position.x = 0.42;
       grp.add(l1); grp.add(l2);
       top = 0.75;
-    } else if (cell.type === 'card') {
+    } else if (kind === 'card') {
       for (var i = 0; i < 3; i++) {
         m = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.03, 0.6), lam(['#ffffff', '#f3c94b', '#e9eefc'][i]));
         m.position.set(-0.08 + i * 0.08, 0.03 + i * 0.045, 0);
@@ -2207,7 +2505,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
         grp.add(m);
       }
       top = 0.55;
-    } else if (cell.type === 'news') {
+    } else if (kind === 'news') {
       m = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.05, 0.7, 8), lam('#e8ecef'));
       m.position.y = 0.35;
       grp.add(m);
@@ -2216,7 +2514,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       m.rotation.z = Math.PI / 2;
       grp.add(m);
       top = 1.15;
-    } else if (cell.type === 'swan') {
+    } else if (kind === 'swan') {
       var blk = lam('#23262d');
       m = new THREE.Mesh(new THREE.SphereGeometry(0.28, 14, 10), blk);
       m.scale.set(1.25, 0.72, 0.82);
@@ -2234,7 +2532,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       m.rotation.z = -Math.PI / 2 - 0.3;
       grp.add(m);
       top = 1.0;
-    } else if (cell.type === 'broker') {
+    } else if (kind === 'broker') {
       m = new THREE.Mesh(new THREE.BoxGeometry(0.66, 0.4, 0.5), lam('#f4f0ff'));
       m.position.y = 0.2;
       grp.add(m);
@@ -2242,7 +2540,46 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       m.position.y = 0.44;
       grp.add(m);
       top = 0.9;
-    } else if (cell.type === 'rest') {
+    } else if (kind === 'shop') {
+      // 攤位：櫃台＋條紋遮雨棚
+      m = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.32, 0.36), lam('#f6f1e4'));
+      m.position.y = 0.16;
+      grp.add(m);
+      for (var si = 0; si < 4; si++) {
+        m = new THREE.Mesh(new THREE.BoxGeometry(0.19, 0.05, 0.5), lam(si % 2 ? '#ffffff' : '#18a2a8'));
+        m.position.set(-0.28 + si * 0.19, 0.62, 0.04);
+        m.rotation.x = 0.25;
+        grp.add(m);
+      }
+      m = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.36, 6), lam('#8a96a0'));
+      m.position.set(-0.33, 0.45, -0.15); grp.add(m);
+      m = m.clone(); m.position.x = 0.33; grp.add(m);
+      top = 0.8;
+    } else if (kind === 'cb') {
+      // 央行：台基、四根柱子、三角屋頂
+      m = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.08, 0.56), lam('#f4ecd8'));
+      m.position.y = 0.04; grp.add(m);
+      for (var ci = 0; ci < 4; ci++) {
+        m = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.42, 10), lam('#fbf7ec'));
+        m.position.set(-0.27 + ci * 0.18, 0.29, 0.12); grp.add(m);
+      }
+      m = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.07, 0.56), lam('#f4ecd8'));
+      m.position.y = 0.53; grp.add(m);
+      m = new THREE.Mesh(new THREE.ConeGeometry(0.5, 0.2, 4), lam('#e2c46a'));
+      m.position.y = 0.66; m.rotation.y = Math.PI / 4; m.scale.z = 0.7; grp.add(m);
+      top = 0.95;
+    } else if (kind === 'ritual') {
+      // 法會：香爐和三炷香
+      m = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.18, 0.22, 16), lam('#b38b3a'));
+      m.position.y = 0.11; grp.add(m);
+      for (var ri = 0; ri < 3; ri++) {
+        m = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.42, 6), lam('#7a3b22'));
+        m.position.set(-0.08 + ri * 0.08, 0.42, 0); grp.add(m);
+        m = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 6), new THREE.MeshBasicMaterial({ color: 0xff7a2e }));
+        m.position.set(-0.08 + ri * 0.08, 0.64, 0); grp.add(m);
+      }
+      top = 0.85;
+    } else if (kind === 'rest') {
       m = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.18, 0.3, 16), lam('#ffffff'));
       m.position.y = 0.15;
       grp.add(m);
@@ -2328,7 +2665,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     c.textAlign = 'right';
     c.fillStyle = reg[1];
     c.font = '700 34px ' + FONT;
-    c.fillText('● ' + reg[0], cv.width - 28, 40);
+    c.fillText('● ' + reg[0] + ' ' + st.score + ' 分', cv.width - 28, 40);
     c.textAlign = 'left';
     c.fillStyle = '#f2c230';
     c.font = '700 46px ' + FONT;
@@ -2385,10 +2722,10 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     });
     this.dice = [];
     var fx = Math.cos(this.azimuth), fz = Math.sin(this.azimuth);
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 3; i++) {
       var d = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), mats);
-      var side = i ? 0.45 : -0.45;
-      d.userData.home = { x: fx * 1.5 - fz * side, z: fz * 1.5 + fx * side };
+      var side = [-0.45, 0.45, 0][i], fwd = [1.5, 1.5, 2.15][i];
+      d.userData.home = { x: fx * fwd - fz * side, z: fz * fwd + fx * side };
       d.position.set(d.userData.home.x, 0.36, d.userData.home.z);
       d.castShadow = true;
       d.visible = false;
@@ -2397,11 +2734,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     }
   };
 
-  P.rollDice = function (a, b) {
-    var self = this, vals = [a, b];
+  P.rollDice = function (a, b, c) {
+    var self = this, vals = [a, b, c || 0];
     return Promise.all(this.dice.map(function (d, i) {
       if (!vals[i]) { d.visible = false; self.dirty = true; return Promise.resolve(); }
-      var fin = DICE_ROT[vals[i]], sx = (i ? 3 : 2) * Math.PI * 2, sz = (i ? 2 : 3) * Math.PI * 2;
+      var fin = DICE_ROT[vals[i]], sx = [2, 3, 4][i] * Math.PI * 2, sz = [3, 2, 3][i] * Math.PI * 2;
       d.visible = true;
       return self.tween(850, function (t) {
         var e = 1 - Math.pow(1 - t, 3);
@@ -2763,11 +3100,14 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   var cellOf = [];
   D.board.forEach(function (c, i) { if (c.type === 'company') cellOf[c.cid] = i; });
   var CELL_TEXT = {
-    start: '經過或停留會拿到一張遠端下單，再抽兩張策略卡。股息與大股東報酬改在每年第 4 季收盤發放。',
+    start: '經過或停留會拿到一張遠端下單，再抽一張策略卡。股息與大股東報酬在每年第 4 季收盤發放。',
     card: '停在這裡抽一張策略卡。',
-    news: '停在這裡抽一張產業快訊，可能影響某個產業，也可能是你個人的小事件。',
-    broker: '停在這裡可以買進任一家公司，最多 10 張。',
-    rest: '停在這裡休息一下，領 1 萬零用金。',
+    meeting: '停在這裡抽兩張策略卡，留一張。',
+    broker: '停在這裡可以買進任一家公司，最多 10 張，也可以併購。',
+    brief: '停在這裡會舉辦法說會：隨機一家公司擲骰上漲 5%～10%。',
+    ritual: '停在這裡會舉辦法會，但辦得不太順利：隨機一家公司擲骰下跌 5%～10%。',
+    shop: '經過可以從 3 張卡裡買 1 張，停在這裡可以從 5 張裡買 2 張，每張 3 萬。',
+    cb: '停在這裡由你決定央行政策：降息讓景氣分數 +3，升息讓景氣分數 −3。',
     swan: '停在這裡會翻開一張黑天鵝，全市場所有人同時受影響。'
   };
   var VOL_TEXT = { L: '低', M: '中', H: '高' };
@@ -2809,7 +3149,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return {
       cash: s.players.map(function (p) { return p.cash; }),
       hold: s.players.map(function (p) { return p.holdings.slice(); }),
-      prices: s.prices.slice(), quarter: s.quarter, regime: s.regime, macro: s.macro, turn: s.turn,
+      prices: s.prices.slice(), quarter: s.quarter, regime: s.regime, score: s.score, macro: s.macro, forecast: s.forecast, turn: s.turn,
       prevIndex: s.indexHist.length > 1 ? s.indexHist[s.indexHist.length - 2] : 10000
     };
   }
@@ -2874,13 +3214,15 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     $('hudTime').textContent = '第 ' + Math.ceil(q / 4) + ' 年・第 ' + (((q - 1) % 4) + 1) + ' 季';
     var lamp = $('hudLamp');
     lamp.className = 'lamp ' + view.regime;
-    lamp.textContent = REGIME_TEXT[view.regime];
+    lamp.textContent = REGIME_TEXT[view.regime] + ' ' + view.score + '分';
+    lamp.title = '景氣分數 ' + view.score + '：' + K.scoreBull + ' 分以上多頭、' + K.scoreBear + ' 分以下空頭';
     $('hudIndex').textContent = idx.toLocaleString('en-US');
     var chg = $('hudChg');
     chg.textContent = pctStr(view.prevIndex, idx);
     chg.style.color = idx > view.prevIndex ? '#ff6b5e' : idx < view.prevIndex ? '#35c486' : '';
     var m = view.macro >= 0 ? D.macro[view.macro] : null;
-    $('hudEvent').innerHTML = m ? '本季事件：' + esc(m.name) + ' <span>' + (fxText(fxList(m)) || '無影響') + '</span>' : '';
+    $('hudEvent').innerHTML = (m ? '本季：' + esc(m.name) : view.quarter === 1 ? '本季：開局，沒有總經事件' : '') +
+      (view.forecast ? '<span class="fcl"><b class="fc">下季預告</b> ' + esc(D.macro[view.forecast[0]].name) + ' <span>或</span> ' + esc(D.macro[view.forecast[1]].name) + '</span>' : '');
   }
 
   function renderPlayers() {
@@ -2910,7 +3252,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     ui.qtyBuy = Math.max(1, Math.min(max, ui.qtyBuy));
     return '<div class="trade">' + stepperHtml('buy', ui.qtyBuy) +
       '<button class="btn buy grow" data-act="buy" data-cid="' + cid + '">買進 ' + ui.qtyBuy + ' 張・' + wan(unit * ui.qtyBuy) + '</button></div>' +
-      (unit < full ? '<div class="ctx-text">' + (E.insider(s, me, cid) ? '大股東內部認股' : '策略卡折扣中') + '：一張原價 ' + wan(full) + '，你只要 <b>' + wan(unit) + '</b>。</div>' : '');
+      (unit < full ? '<div class="ctx-text">' + (E.insider(s, me, cid) ? '大股東內部認股' : s.ctx && s.ctx.treasury && s.major[cid] === me ? '庫藏股' : '空頭季折扣') + '：一張原價 ' + wan(full) + '，你只要 <b>' + wan(unit) + '</b>。</div>' : '');
   }
   function mergeTargets(cid, me) {
     var s = game.state, out = [];
@@ -2932,7 +3274,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     ui.qtyMerge = Math.max(1, Math.min(max, ui.qtyMerge || 1));
     return chips + '<div class="trade">' + stepperHtml('merge', ui.qtyMerge) +
       '<button class="btn merge grow" data-act="merge" data-cid="' + cid + '">併購 ' + ui.qtyMerge + ' 張・' + wan(unit * ui.qtyMerge) + '</button></div>' +
-      '<div class="ctx-text">比市價多付 ' + Math.round(K.mergePremium * 100) + '%，全部付給 ' + pname(from) + '。這回合還能併購 ' + E.mergeAllowance(s, cid) + ' 張。</div>';
+      '<div class="ctx-text">' + (E.mergePremium(s) ? '比市價多付 ' + Math.round(E.mergePremium(s) * 100) + '%（' + REGIME_TEXT[s.regime] + '季），全部付給 ' + pname(from) + '。' : '敵意併購生效，這回合不用付溢價。') + '這回合還能併購 ' + E.mergeAllowance(s, cid) + ' 張。</div>';
   }
   function canTrade(s, cid) { return E.allowance(s, cid) > 0 || E.mergeAllowance(s, cid) > 0; }
   function tradeHtml(cid, me) {
@@ -2948,7 +3290,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     var s = game.state, have = s.players[me].holdings[cid];
     if (have <= 0) return '';
     ui.qtySell = Math.max(1, Math.min(have, ui.qtySell));
-    var gain = Math.round(E.lotValue(s, cid) * ui.qtySell * (1 - K.sellFee));
+    var gain = Math.round(E.lotValue(s, cid) * ui.qtySell * (1 - E.sellFee(s)));
     return '<div class="trade">' + stepperHtml('sell', ui.qtySell) +
       '<button class="btn sell grow" data-act="sell" data-cid="' + cid + '">賣出 ' + ui.qtySell + ' 張・拿回 ' + wan(gain) + '</button></div>';
   }
@@ -2995,6 +3337,27 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return -1;
   }
 
+  function handCard(p, type) { for (var i = 0; i < p.hand.length; i++) if (p.hand[i].type === type) return p.hand[i]; return null; }
+  function quickCards(s, me) {
+    var p = s.players[me], out = '', c;
+    if ((c = handCard(p, 'triple'))) out += '<button class="btn small gold" data-act="play" data-uid="' + c.uid + '">三顆骰</button>';
+    if ((c = handCard(p, 'pick'))) {
+      out += '<span class="pick"><span class="muted">指定骰</span>';
+      for (var k = 1; k <= 6; k++) out += '<button class="btn small gold" data-act="play" data-uid="' + c.uid + '" data-steps="' + k + '" title="走到「' + cellName((p.pos + k) % D.board.length) + '」">' + k + '</button>';
+      out += '</span>';
+    }
+    return out || '<span class="muted">想走近一點時用</span>';
+  }
+  function cellName(i) { var c = D.board[i]; return c.type === 'company' ? cname(c.cid) : c.name; }
+  function shopHtml(s, me) {
+    var sh = s.ctx && s.ctx.shop;
+    if (!sh || sh.left <= 0 || !sh.cards.some(function (c) { return c; })) return '';
+    var cash = s.players[me].cash;
+    return '<div class="ctx-title">卡片交易所 <small>' + (sh.landed ? '停留' : '經過') + '・還能買 ' + sh.left + ' 張・每張 ' + wan(K.shopPrice) + '</small></div><div class="offer">' + sh.cards.map(function (type, i) {
+      if (!type) return '<div class="offer-card sold"><b>已買</b></div>';
+      return '<button class="offer-card cat-' + D.cards[type].cat + '" data-act="shopbuy" data-i="' + i + '"' + (cash < K.shopPrice ? ' disabled' : '') + ' title="' + D.cards[type].text + '"><b>' + cardName(type) + '</b><small>' + D.CAT_NAMES[D.cards[type].cat] + '</small><span>' + D.cards[type].text + '</span><em>買</em></button>';
+    }).join('') + '</div>';
+  }
   function renderPanel() {
     if (!game) return;
     var s = game.state, me = myTurn(), ctx = '', main = { label: '請稍候', act: '', dis: true };
@@ -3011,15 +3374,26 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       if (fc0 >= 0) ctx += companyLine(fc0) + tradeHtml(fc0, me) + otherPick(s);
       else if (anyAllowance(s)) ctx += '<div class="ctx-text">遠端下單生效中：可以買進任一家公司最多 ' + K.remoteCap + ' 張（不含你站著的那家，不能併購）。</div><div class="trade"><button class="btn small" data-act="pickstock">選一家公司</button></div>';
         else ctx += '<div class="ctx-text">擲骰前可以先賣股票或出策略卡。</div>';
-      ctx += '<div class="trade"><button class="btn small" data-act="roll1">只擲一顆骰子</button><span class="muted">想走近一點時用</span></div>';
+      ctx += '<div class="trade"><button class="btn small" data-act="roll1">只擲一顆骰子</button>' + quickCards(s, me) + '</div>';
       main = { label: '擲兩顆骰子', act: 'roll', dis: false };
     } else if (s.phase === 'rolled') {
-      var d = s.ctx.dice, to = (s.players[me].pos + d[0] + d[1]) % D.board.length, cell = D.board[to];
-      ctx = '<div class="ctx-title">擲出 ' + (d[1] ? d[0] + ' ＋ ' + d[1] : d[0]) + '</div><div class="ctx-text">會走到「<b>' + (cell.type === 'company' ? cname(cell.cid) : cell.name) + '</b>」。你手上有「加班趕路」，不滿意可以重擲一次。</div>' +
+      var d = s.ctx.dice.filter(function (x) { return x; }), sum = d.reduce(function (a, b) { return a + b; }, 0), to = (s.players[me].pos + sum) % D.board.length, cell = D.board[to];
+      ctx = '<div class="ctx-title">擲出 ' + d.join(' ＋ ') + '</div><div class="ctx-text">會走到「<b>' + (cell.type === 'company' ? cname(cell.cid) : cell.name) + '</b>」。你手上有「加班趕路」，不滿意可以重擲一次。</div>' +
         '<div class="trade"><button class="btn small gold" data-act="reroll">用「加班趕路」重擲</button></div>';
-      main = { label: '前進 ' + (d[0] + d[1]) + ' 步', act: 'move', dis: false };
+      main = { label: '前進 ' + sum + ' 步', act: 'move', dis: false };
     } else if (s.phase === 'major') {
       ctx = '<div class="ctx-title">等待大股東決定</div>';
+    } else if (s.phase === 'act' && (s.ctx.meeting || s.ctx.cb)) {
+      if (s.ctx.meeting) {
+        ctx = '<div class="ctx-title">策略會議 <small>兩張選一張留下</small></div><div class="offer">' + s.ctx.meeting.map(function (type, i) {
+          return '<button class="offer-card cat-' + D.cards[type].cat + '" data-act="meet" data-i="' + i + '"><b>' + cardName(type) + '</b><small>' + D.CAT_NAMES[D.cards[type].cat] + '</small><span>' + D.cards[type].text + '</span><em>留這張</em></button>';
+        }).join('') + '</div>';
+      } else {
+        var sc = s.score, up = Math.min(K.scoreMax, sc + K.cbStep), dn = Math.max(K.scoreMin, sc - K.cbStep);
+        ctx = '<div class="ctx-title">央行 <small>景氣分數 ' + sc + '（' + REGIME_TEXT[s.regime] + '）</small></div><div class="ctx-text">' + K.scoreBull + ' 分以上多頭、' + K.scoreBear + ' 分以下空頭。改完馬上影響這一季的燈號。</div>' +
+          '<div class="trade"><button class="btn grow" data-act="cbdir" data-dir="1">降息：' + sc + ' → ' + up + '（' + REGIME_TEXT[E.regimeOf(up)] + '）</button><button class="btn grow" data-act="cbdir" data-dir="-1">升息：' + sc + ' → ' + dn + '（' + REGIME_TEXT[E.regimeOf(dn)] + '）</button></div>';
+      }
+      main = { label: '請先完成決定', act: '', dis: true };
     } else if (s.phase === 'act') {
       var here = D.board[s.players[me].pos], fc = focusCompany(s);
       if (fc >= 0) {
@@ -3033,6 +3407,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       } else {
         ctx = '<div class="ctx-title">' + here.name + '</div><div class="ctx-text">' + CELL_TEXT[here.type] + '</div>';
       }
+      ctx = shopHtml(s, me) + ctx;
       if (s.players[me].hand.length > K.handMax) ctx += '<div class="ctx-text up">手牌超過 ' + K.handMax + ' 張，要先出卡或棄卡才能結束回合。</div>';
       main = { label: '結束回合', act: 'end', dis: false };
     }
@@ -3067,9 +3442,22 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   }
   function openSheet(sh) { ui.sheet = sh; ui.playing = null; renderSheet(); }
 
+  function forecastBox(s) {
+    if (!s.forecast) return '<div class="regime-box"><b>這是最後一季</b>，沒有下季預告。</div>';
+    return '<div class="regime-box fcbox"><b>下季預告</b>（兩個裡面會發生一個，各半機率）' + s.forecast.map(function (id) {
+      var m = D.macro[id];
+      return '<div><b>' + esc(m.name) + '</b>：' + (fxText(fxList(m)) || '無影響') + '<span class="muted">・景氣分數 ' + (m.score * (K.scoreScale || 1) >= 0 ? '+' : '−') + Math.abs(m.score * (K.scoreScale || 1)) + '</span></div>';
+    }).join('') + '</div>';
+  }
+  function regimeBox(s) {
+    var r = K.regimeRules[s.regime];
+    return '<div class="regime-box ' + s.regime + '"><b>' + REGIME_TEXT[s.regime] + '季</b>' + (s.flipped ? '（景氣轉向）' : '') + '　景氣分數 <b class="num">' + s.score + '</b>（' + K.scoreBull + ' 分以上多頭、' + K.scoreBear + ' 分以下空頭）<br>' +
+      '一般買進' + (r.buyDisc ? '打 ' + Math.round((1 - r.buyDisc) * 100) / 10 + ' 折' : '原價') + '・併購溢價 ' + Math.round(r.premium * 100) + '%・賣出' + (r.sellFee ? '交易成本 ' + Math.round(r.sellFee * 100) + '%' : '免交易成本') + '</div>' + forecastBox(s);
+  }
   function marketSheet(sh) {
     var s = game.state, who = ui.me >= 0 ? ui.me : -1, html = '';
     if (sh.pick) html += '<p class="muted">選一家要買的公司。</p>';
+    html += regimeBox(s);
     html += '<div class="stock-cols"><span>公司</span><span>股價</span><span>本季</span><span>持股</span></div>';
     D.sectors.forEach(function (sec) {
       var tr = s.trend[sec.id] || 0;
@@ -3096,36 +3484,39 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     if (who >= 0 && s.players[who].holdings[cid]) {
       var have = s.players[who].holdings[cid], cost = s.players[who].costBasis[cid], val = have * E.lotValue(s, cid);
       html += '<div class="block"><h3>' + pname(who) + ' 的持股</h3><div class="kv"><span>持有 <b>' + have + '</b> 張</span><span>市值 <b>' + wan(val) + '</b></span><span>損益 <b class="' + cls(cost, val) + '">' + signed(val - cost) + '</b></span></div>' +
-        (me === who && (s.phase === 'pre' || s.phase === 'act') ? sellHtml(cid, me) + '<div class="muted">賣出會扣 1% 交易成本。</div>' : '<div class="muted">輪到你的時候才能賣出。</div>') + '</div>';
+        (me === who && (s.phase === 'pre' || s.phase === 'act') ? sellHtml(cid, me) + '<div class="muted">' + (E.sellFee(s) ? '賣出會扣 ' + Math.round(E.sellFee(s) * 100) + '% 交易成本。' : '多頭季賣出免交易成本。') + '</div>' : '<div class="muted">輪到你的時候才能賣出。</div>') + '</div>';
     }
     if (me >= 0 && (s.phase === 'pre' || s.phase === 'act') && canTrade(s, cid)) html += '<div class="block"><h3>買進／併購</h3>' + tradeHtml(cid, me) + '</div>';
     else html += '<div class="block"><div class="muted">踩到這家公司的格子（或券商營業廳）才能買進。</div></div>';
     return sheetWrap(c.name, html);
   }
 
+  var WHEN_TEXT = { pre: '擲骰前才能用', rolled: '擲骰後、移動前才能用', act: '移動後、站在公司格上才能用', turn: '輪到你時可以用' };
+  function whyNot(s, me, type) {
+    var def = D.cards[type], cell = D.board[s.players[me].pos];
+    if (type === 'treasury' && !s.major.some(function (m) { return m === me; })) return '你要先當上某家公司的大股東';
+    if (type === 'flip' && s.regime === 'flat') return '盤整季不能用';
+    if ((type === 'bull' || type === 'bear') && s.phase === 'act' && cell.type === 'company') return '這個產業這一季已經被卡片影響過';
+    return WHEN_TEXT[def.when];
+  }
   function handSheet() {
     var s = game.state, who = ui.me, p = s.players[who], me = myTurn() === who, html = '';
-    var canPlay = me && (s.phase === 'pre' || s.phase === 'act');
-    html += '<div class="sec-head">生效中 <span>最多 ' + K.activeMax + ' 張，每張持續 ' + K.cardDur + ' 季</span></div>';
-    if (!p.active.length) html += '<p class="muted">還沒有生效中的策略卡。</p>';
-    p.active.forEach(function (a) {
-      html += '<div class="card active"><div class="card-top"><b>' + cardName(a.type) + '</b>' + (a.sector ? secTag(a.sector) : '') + '<span class="left">還剩 ' + a.left + ' 季</span></div><p>' + D.cards[a.type].text + '</p></div>';
-    });
-    html += '<div class="sec-head">手牌 <span>' + p.hand.length + ' / ' + K.handMax + ' 張</span></div>';
+    var turn = me && (s.phase === 'pre' || s.phase === 'act');
+    html += '<div class="sec-head">手牌 <span>' + p.hand.length + ' / ' + K.handMax + ' 張・行動卡管自己、對抗卡針對對手、中立卡影響所有人</span></div>';
+    if (p.audited) html += '<p class="muted up">你被查帳了：下次年底的大股東權益報酬減半。</p>';
     if (!p.hand.length) html += '<p class="muted">手上沒有卡。經過結算站或停在策略教室可以抽卡。</p>';
     p.hand.forEach(function (c) {
-      var def = D.cards[c.type], acts = '', pl = ui.playing && ui.playing.uid === c.uid ? ui.playing : null;
-      if (pl && pl.step === 'sector') {
-        acts = '<div class="muted">選一個產業：</div><div class="pick">' + D.sectors.map(function (x) { return '<button class="btn small" style="border-color:' + x.color + '" data-act="sector" data-sec="' + x.id + '">' + x.name + '</button>'; }).join('') + '</div>';
-      } else if (pl && pl.step === 'replace') {
-        acts = '<div class="muted">生效中的卡已滿，要換掉哪一張？</div><div class="pick">' + p.active.map(function (a) { return '<button class="btn small" data-act="replace" data-type="' + a.type + '">' + cardName(a.type) + '（剩 ' + a.left + ' 季）</button>'; }).join('') + '</div>';
-      } else if (c.type === 'reroll') {
-        acts = me && s.phase === 'rolled' ? '<button class="btn small gold" data-act="reroll">重擲骰子</button>' : '<span class="muted">擲骰後、移動前才能用。</span>';
-      } else if (canPlay) {
+      var def = D.cards[c.type], acts = '', ok = me && E.canPlay(s, who, c.type);
+      if (ok && def.need === 'steps') {
+        acts = '<span class="muted">走幾步：</span>';
+        for (var k = 1; k <= 6; k++) acts += '<button class="btn small gold" data-act="play" data-uid="' + c.uid + '" data-steps="' + k + '" title="' + cellName((p.pos + k) % D.board.length) + '">' + k + '</button>';
+      } else if (ok && def.need === 'target') {
+        acts = '<span class="muted">對誰：</span>' + s.players.map(function (q, i) { return i === who ? '' : '<button class="btn small gold" data-act="play" data-uid="' + c.uid + '" data-target="' + i + '"><i class="tdot" style="background:' + COLORS[i] + ';width:10px;height:10px;margin-right:2px"></i>' + esc(q.name) + (q.audited ? '（已被查帳）' : '') + '</button>'; }).join('');
+      } else if (ok) {
         acts = '<button class="btn small gold" data-act="play" data-uid="' + c.uid + '">出牌</button>';
-      } else acts = '<span class="muted">輪到你、還沒結束回合時可以出牌。</span>';
-      if (canPlay) acts += ' <button class="btn small" data-act="discard" data-uid="' + c.uid + '">棄掉</button>';
-      html += '<div class="card"><div class="card-top"><b>' + def.name + '</b><small>' + (def.kind === 'lasting' ? '持續 ' + K.cardDur + ' 季' : '用完即丟') + '</small></div><p>' + def.text + '</p><div class="card-acts">' + acts + '</div></div>';
+      } else acts = '<span class="muted">' + (me ? whyNot(s, who, c.type) : '輪到你時才能出牌') + '</span>';
+      if (turn) acts += ' <button class="btn small" data-act="discard" data-uid="' + c.uid + '">棄掉</button>';
+      html += '<div class="card cat-' + def.cat + '"><div class="card-top"><b>' + def.name + '</b><small class="cat">' + D.CAT_NAMES[def.cat] + '</small></div><p>' + def.text + '</p><div class="card-acts">' + acts + '</div></div>';
     });
     return sheetWrap(pname(who) + ' 的策略卡', html);
   }
@@ -3139,8 +3530,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   function playerSheet(pid) {
     var s = game.state, p = s.players[pid], hv = E.holdingsValue(s, pid), html = '';
     html += '<div class="facts"><div>總資產<b>' + wan1(E.total(s, pid)) + '</b></div><div>現金<b>' + wan1(p.cash) + '</b></div><div>持股市值<b>' + wan1(hv) + '</b></div><div>繞圈<b>' + p.laps + ' 次</b></div>' +
-      '<div>累計領到股息<b>' + yuan(p.divGot || 0) + '</b></div><div>累計股東報酬<b>' + yuan(p.majorGot || 0) + '</b></div></div>';
-    html += '<div class="block"><h3>生效中的策略卡</h3>' + (p.active.length ? '<div class="holders">' + p.active.map(function (a) { return '<span><b>' + cardName(a.type) + '</b>' + (a.sector ? '・' + D.sectorById(a.sector).name : '') + '（剩 ' + a.left + ' 季）</span>'; }).join('') + '</div>' : '<div class="muted">沒有。</div>') + '<div class="muted">手牌 ' + p.hand.length + ' 張</div></div>';
+      '<div>累計領到股息<b>' + yuan(p.divGot || 0) + '</b></div><div>累計股東報酬<b>' + yuan(p.majorGot || 0) + '</b></div><div>累計現金利息<b>' + yuan(p.interestGot || 0) + '</b></div></div>';
+    html += '<div class="block"><div class="muted">手牌 ' + p.hand.length + ' 張' + (p.audited ? '・<span class="up">被查帳中：下次年底大股東報酬減半</span>' : '') + '</div></div>';
     var list = [], totCost = 0, expDiv = 0, expMajor = 0;
     D.companies.forEach(function (c) {
       if (!p.holdings[c.id]) return;
@@ -3179,14 +3570,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     var h = '<h3>公司</h3><div class="tbl"><table><tr><th>產業</th><th>公司</th><th>開局股價</th><th>波動</th><th>每張股息</th><th>定位</th></tr>';
     D.companies.forEach(function (c) { h += '<tr><td>' + D.sectorById(c.sector).name + '</td><td>' + c.name + '</td><td class="n">' + px(c.price0) + '</td><td>' + VOL_TEXT[c.vol] + '</td><td class="n">' + c.div.toLocaleString('en-US') + '</td><td>' + c.role + '</td></tr>'; });
     h += '</table></div><h3>策略卡</h3><div class="tbl"><table><tr><th>卡名</th><th>張數</th><th>類型</th><th>效果</th></tr>';
-    Object.keys(D.cards).forEach(function (k) { var c = D.cards[k]; h += '<tr><td>' + c.name + '</td><td class="n">' + c.count + '</td><td>' + (c.kind === 'lasting' ? '持續' : '即時') + '</td><td>' + c.text + '</td></tr>'; });
-    h += '</table></div><h3>總經事件（每季一張）</h3><div class="tbl"><table><tr><th>事件</th><th>影響</th></tr>';
-    D.macro.forEach(function (m) { h += '<tr><td>' + m.name + '</td><td>' + (fxText(fxList(m)) || '無影響') + '</td></tr>'; });
+    Object.keys(D.cards).forEach(function (k) { var c = D.cards[k]; h += '<tr><td>' + c.name + '</td><td class="n">' + c.count + '</td><td>' + D.CAT_NAMES[c.cat] + '</td><td>' + c.text + '</td></tr>'; });
+    h += '</table></div><h3>總經事件（每季一張）</h3><div class="tbl"><table><tr><th>事件</th><th>影響</th><th>景氣分數</th></tr>';
+    D.macro.forEach(function (m) { var sc = m.score * (K.scoreScale || 1); h += '<tr><td>' + m.name + '</td><td>' + (fxText(fxList(m)) || '無影響') + '</td><td class="n">' + (sc > 0 ? '+' : sc < 0 ? '−' : '') + Math.abs(sc) + '</td></tr>'; });
     h += '</table></div><h3>黑天鵝</h3><div class="tbl"><table><tr><th>事件</th><th>影響</th></tr>';
     D.swans.forEach(function (m) { h += '<tr><td>' + m.name + '</td><td>' + fxText(fxList(m)) + '</td></tr>'; });
-    h += '</table></div><h3>產業快訊</h3><div class="tbl"><table><tr><th>事件</th><th>影響</th></tr>';
-    var seen = {};
-    D.news.forEach(function (m) { if (seen[m.name]) return; seen[m.name] = 1; h += '<tr><td>' + m.name + '</td><td>' + newsText(m, null) + '</td></tr>'; });
     return h + '</table></div>';
   }
   function newsText(nw, e) {
@@ -3260,7 +3648,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     html += '<div class="rank">' + rk.map(function (r, i) {
       var p = s.players[r.p];
       return '<span class="no">' + (i + 1) + '</span><span class="who"><i style="background:' + COLORS[r.p] + '"></i>' + esc(p.name) + (p.kind === 'ai' ? ' <small>' + AI.LABELS[p.style] + '</small>' : '') + '</span><span class="amt">' + wan1(r.total) + '</span>' +
-        '<span class="sub">現金 ' + wan1(r.cash) + '・持股 ' + wan1(r.total - r.cash) + '・繞圈 ' + p.laps + ' 次<br>累計領到 股利 ' + wan1(p.divGot || 0) + '・股東報酬 ' + wan1(p.majorGot || 0) + '</span>';
+        '<span class="sub">現金 ' + wan1(r.cash) + '・持股 ' + wan1(r.total - r.cash) + '・繞圈 ' + p.laps + ' 次<br>累計領到 股利 ' + wan1(p.divGot || 0) + '・股東報酬 ' + wan1(p.majorGot || 0) + '・利息 ' + wan1(p.interestGot || 0) + '</span>';
     }).join('') + '</div>';
     html += '<div class="block" style="margin-top:14px"><h3>總資產走勢</h3>' + chartSvg() + '</div>';
     html += '<div class="block"><div class="muted">本局種子：<span class="num">' + esc(game.seed) + '</span>（同一組種子與相同操作可以重現同一局）</div><div class="card-acts"><button class="btn primary grow" data-act="again">' + (game.net ? '回到開局畫面' : '再玩一局') + '</button>' + (game.net ? '' : '<button class="btn" data-act="sameseed">同一個種子重玩</button>') + '</div></div>';
@@ -3295,10 +3683,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return scene.animatePrices(e.changes).then(function () { return scene.wait(e.cause === 'open' ? 250 : 380); });
   };
   EV.regime = function (e) {
-    view.regime = e.regime; view.prevIndex = e.from;
+    view.regime = e.regime; view.prevIndex = e.from; view.score = e.score;
     scene.drawScreen();
-    logLine('景氣燈號：' + REGIME_TEXT[e.regime] + '（大盤 ' + e.to.toLocaleString('en-US') + '，' + pctStr(e.from, e.to) + '）');
-    toast('景氣燈號：<b>' + REGIME_TEXT[e.regime] + '</b>　大盤 ' + pctStr(e.from, e.to));
+    var dsc = e.score - e.scoreFrom;
+    logLine('景氣燈號：' + REGIME_TEXT[e.regime] + '（景氣分數 ' + e.score + '，' + (dsc >= 0 ? '+' : '−') + Math.abs(dsc) + '；大盤 ' + e.to.toLocaleString('en-US') + '）');
+    toast('景氣燈號：<b>' + REGIME_TEXT[e.regime] + '</b>　分數 ' + e.score + '（' + (dsc >= 0 ? '+' : '−') + Math.abs(dsc) + '）');
     renderHud();
     return scene.wait(500);
   };
@@ -3320,8 +3709,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return scene.wait(120);
   };
   EV.dice = function (e) {
-    logLine(pname(e.p) + (e.reroll ? ' 重擲' : ' 擲出') + ' ' + (e.d[1] ? e.d[0] + '＋' + e.d[1] : e.d[0] + '（一顆骰）'));
-    return scene.rollDice(e.d[0], e.d[1]).then(function () { return scene.wait(260); });
+    logLine(pname(e.p) + (e.reroll ? ' 重擲' : ' 擲出') + ' ' + e.d.filter(function (x) { return x; }).join('＋') + (e.d.filter(function (x) { return x; }).length === 1 ? '（一顆骰）' : ''));
+    return scene.rollDice(e.d[0], e.d[1], e.d[2]).then(function () { return scene.wait(260); });
   };
   EV.move = function (e) { return scene.movePiece(e.p, e.from, e.steps); };
   EV.settle = function (e) {
@@ -3330,11 +3719,11 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return scene.wait(300);
   };
   EV.payout = function (e) {
-    var amt = e.div + e.major;
+    var amt = e.div + e.major + (e.interest || 0);
     view.cash[e.p] += amt;
     floater(scene.pieceScreenPos(e.p), signed(amt), 'up', true);
-    logLine('第 ' + e.year + ' 年底，' + pname(e.p) + ' 領股息 ' + wan(e.div) + (e.divExtra ? '（含高股息加碼）' : '') + '＋大股東權益報酬 ' + wan(e.major) + (e.majorExtra ? '（含董事席位加碼）' : ''));
-    toast(pname(e.p) + ' 年底領 <b>' + wan(amt) + '</b>（股息 ' + wan(e.div) + '・大股東 ' + wan(e.major) + '）');
+    logLine('第 ' + e.year + ' 年底，' + pname(e.p) + ' 領股息 ' + wan(e.div) + '＋大股東權益報酬 ' + wan(e.major) + '＋現金利息 ' + wan(e.interest || 0) + (e.audited ? '（被查帳少領 ' + wan(e.audited) + '）' : ''));
+    toast(pname(e.p) + ' 年底領 <b>' + wan(amt) + '</b>（股息 ' + wan(e.div) + '・大股東 ' + wan(e.major) + '・利息 ' + wan(e.interest || 0) + '）');
     renderPlayers();
     return scene.wait(450);
   };
@@ -3357,6 +3746,44 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     var cell = D.board[e.cell];
     logLine(pname(e.p) + ' 走到「' + (cell.type === 'company' ? cname(cell.cid) : cell.name) + '」');
     return scene.wait(120);
+  };
+  EV.forecast = function (e) {
+    view.forecast = [e.a, e.b];
+    logLine('下季預告：' + D.macro[e.a].name + ' 或 ' + D.macro[e.b].name + '（各半機率）');
+    renderHud();
+    return scene.wait(200);
+  };
+  EV.meeting = function () { return scene.wait(200); };
+  EV.meeting_pick = function (e) {
+    var open = isLocal(e.p) && game.state.players[e.p].kind === 'human';
+    logLine(pname(e.p) + ' 在策略會議留下' + (open ? '「' + cardName(e.card) + '」' : '一張卡'));
+    toast(open ? '留下「<b>' + cardName(e.card) + '</b>」' : pname(e.p) + ' 在策略會議留下一張卡');
+    return scene.wait(250);
+  };
+  EV.shop = function (e) {
+    if (isLocal(e.p) && game.state.players[e.p].kind === 'human') toast((e.landed ? '停在' : '經過') + '<b>卡片交易所</b>，可以買 ' + e.left + ' 張');
+    return scene.wait(150);
+  };
+  EV.shop_buy = function (e) {
+    view.cash[e.p] -= e.cost;
+    var open = isLocal(e.p) && game.state.players[e.p].kind === 'human';
+    logLine(pname(e.p) + ' 在卡片交易所花 ' + wan(e.cost) + ' 買了' + (open ? '「' + cardName(e.card) + '」' : '一張卡'));
+    toast(pname(e.p) + ' 買了' + (open ? '「<b>' + cardName(e.card) + '</b>」' : '一張卡'));
+    renderPlayers();
+    return scene.wait(300);
+  };
+  EV.cb_ask = function () { return scene.wait(100); };
+  EV.cb = function (e) {
+    view.score = e.score; view.regime = e.regime;
+    renderHud(); scene.drawScreen();
+    var txt = (e.dir > 0 ? '降息' : '升息') + '：景氣分數 ' + e.from + ' → ' + e.score + (e.regime !== e.regimeFrom ? '，本季改為' + REGIME_TEXT[e.regime] : '');
+    logLine(pname(e.p) + ' 在央行決定' + txt);
+    return showCard({ kicker: pname(e.p) + ' 主持央行理監事會', title: e.dir > 0 ? '降息' : '升息', html: '<div class="ctx-text">' + txt + '</div>', ms: 1800 });
+  };
+  EV.cellfx = function (e) {
+    var up = e.pct > 0, txt = cname(e.cid) + ' 擲出 ' + e.die + ' 點，' + (up ? '上漲 ' : '下跌 ') + Math.abs(e.pct) + '%';
+    logLine((up ? '法說會：' : '法會：') + txt);
+    return showCard({ cls: up ? '' : 'swan', kicker: pname(e.p) + (up ? ' 走到法說會' : ' 走到法會'), title: up ? cname(e.cid) + ' 法說會報喜' : '法會辦得不太順利', html: '<div class="ctx-text">' + txt + '。</div>', ms: 2000 });
   };
   EV.news = function (e) {
     var nw = D.news[e.id], txt = newsText(nw, e);
@@ -3416,9 +3843,16 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return scene.wait(320);
   };
   EV.play = function (e) {
-    var extra = e.sector ? '（' + D.sectorById(e.sector).name + '）' : '';
-    logLine(pname(e.p) + ' 打出「' + cardName(e.card) + '」' + extra + (e.replaced && e.replaced !== e.card ? '，換掉「' + cardName(e.replaced) + '」' : ''));
+    var extra = '';
+    if (e.card === 'pick') extra = '，走 ' + e.steps + ' 步';
+    else if (e.card === 'audit') extra = '，查 ' + pname(e.target) + ' 的帳';
+    else if (e.card === 'flip') { extra = '，本季改為' + REGIME_TEXT[e.regime]; view.regime = e.regime; renderHud(); scene.drawScreen(); }
+    else if (e.sector) extra = '，' + D.sectorById(e.sector).name + ' 擲出 ' + e.die + ' 點 ' + (e.pct > 0 ? '+' : '−') + Math.abs(e.pct) + '%';
+    logLine(pname(e.p) + ' 打出「' + cardName(e.card) + '」' + extra);
     toast(pname(e.p) + ' 打出「<b>' + cardName(e.card) + '</b>」' + extra);
+    if (e.card === 'bull' || e.card === 'bear' || e.card === 'flip' || e.card === 'audit') {
+      return showCard({ kicker: pname(e.p) + ' 打出' + D.CAT_NAMES[D.cards[e.card].cat] + '卡', title: cardName(e.card), html: '<div class="ctx-text">' + D.cards[e.card].text + extra.replace(/^，/, '<br>') + '</div>', ms: 2000 });
+    }
     return scene.wait(420);
   };
   EV.discard = function (e) { logLine(pname(e.p) + ' 棄掉一張策略卡'); return Promise.resolve(); };
@@ -3737,6 +4171,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     tmode: function (el) { ui.tradeMode = el.dataset.mode; renderPanel(); renderSheet(); },
     mtarget: function (el) { ui.mergeFrom = +el.dataset.pid; ui.qtyMerge = 1; renderPanel(); renderSheet(); },
     sell: function (el) { var me = myTurn(); if (me >= 0) { var q = ui.qtySell; ui.qtySell = 1; dispatch({ type: 'SELL', player: me, cid: +el.dataset.cid, qty: q }); } },
+    meet: function (el) { var me = myTurn(); if (me >= 0) dispatch({ type: 'MEETING_PICK', player: me, idx: +el.dataset.i }); },
+    shopbuy: function (el) { var me = myTurn(); if (me >= 0) dispatch({ type: 'SHOP_BUY', player: me, idx: +el.dataset.i }); },
+    cbdir: function (el) { var me = myTurn(); if (me >= 0) dispatch({ type: 'CB', player: me, dir: +el.dataset.dir }); },
     roll: function () { var me = myTurn(); if (me >= 0) dispatch({ type: 'ROLL', player: me }); },
     roll1: function () { var me = myTurn(); if (me >= 0) dispatch({ type: 'ROLL', player: me, dice: 1 }); },
     move: function () { var me = myTurn(); if (me >= 0) dispatch({ type: 'MOVE', player: me }); },
@@ -3750,14 +4187,12 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     play: function (el) {
       var me = myTurn();
       if (me < 0) return;
-      var uid = +el.dataset.uid, p = game.state.players[me], card = null;
-      p.hand.forEach(function (c) { if (c.uid === uid) card = c; });
-      if (!card) return;
-      ui.playing = { uid: uid, type: card.type, sector: null, step: null };
-      advancePlay(me);
+      var cmd = { type: 'PLAY_CARD', player: me, uid: +el.dataset.uid };
+      if (el.dataset.steps) cmd.steps = +el.dataset.steps;
+      if (el.dataset.target) cmd.target = +el.dataset.target;
+      ui.sheet = null;
+      dispatch(cmd);
     },
-    sector: function (el) { var me = myTurn(); if (me >= 0 && ui.playing) { ui.playing.sector = el.dataset.sec; advancePlay(me); } },
-    replace: function (el) { var me = myTurn(); if (me >= 0 && ui.playing) { ui.playing.replace = el.dataset.type; advancePlay(me); } },
     discard: function (el) { var me = myTurn(); if (me >= 0) dispatch({ type: 'DISCARD', player: me, uid: +el.dataset.uid }); },
     count: function (el) { readSetup(); ui.setup.n = +el.dataset.n; renderSetup(); },
     start: function () {
@@ -3798,14 +4233,6 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     else if (game) renderSheet();
     else $('sheetLayer').innerHTML = '';
   }
-  function advancePlay(me) {
-    var pl = ui.playing, p = game.state.players[me], def = D.cards[pl.type];
-    if (def.needSector && !pl.sector) { pl.step = 'sector'; renderSheet(); return; }
-    if (def.kind === 'lasting' && !E.hasActive(p, pl.type) && p.active.length >= K.activeMax && !pl.replace) { pl.step = 'replace'; renderSheet(); return; }
-    ui.playing = null;
-    dispatch({ type: 'PLAY_CARD', player: me, uid: pl.uid, sector: pl.sector, replace: pl.replace });
-  }
-
   function onClick(ev) {
     var el = ev.target.closest('[data-act]');
     if (!el || el.disabled) return;
