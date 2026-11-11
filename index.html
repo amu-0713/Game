@@ -4660,4 +4660,410 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       pump();
       return;
     }
-    ui.bus
+    ui.busy = false;
+    if (s.phase === 'major') {
+      var pd = s.pending, need = ui.humans > 1 && ui.me !== a, lot = E.lotValue(s, pd.cid), have = p.holdings[pd.cid];
+      renderAll();
+      showCard({
+        kicker: (need ? '請 ' + esc(p.name) + ' 決定・' : '') + '你是大股東',
+        title: '你踩到自己的「' + cname(pd.cid) + '」',
+        html: '<div class="ctx-text">你持有 ' + have + ' 張，市值 ' + wan(have * lot) + '。二選一：<br><b>內部認股</b>：這回合買這家打八五折，一張 ' + wan(Math.round(lot * (1 - K.insiderDisc))) + '（原價 ' + wan(lot) + '）。<br><b>拉抬股價</b>：擲一顆骰，股價上漲 ' + (K.pumpBase + 1) + '%～' + (K.pumpBase + 6) + '%，你的持股約多 ' + wan(Math.round(have * lot * (K.pumpBase + 1) / 100)) + '～' + wan(Math.round(have * lot * (K.pumpBase + 6) / 100)) + '。</div>',
+        buttons: [{ label: '內部認股', value: 'insider', cls: 'gold' }, { label: '拉抬股價', value: 'pump' }]
+      }).then(function (v) { if (token === game) dispatch({ type: 'MAJOR_CHOICE', player: a, choice: v }); });
+      return;
+    }
+    ui.me = a;
+    if (s.phase === 'act' && s.ctx.meeting && ui.meetPicks && ui.meetPicks.length) {
+      var idx = ui.meetPicks.shift();
+      if (!ui.meetPicks.length) ui.meetPicks = null;
+      if (s.ctx.meeting.cards[idx]) { dispatch({ type: 'MEETING_PICK', player: a, idx: idx }); return; }
+    }
+    ui.meetPicks = null;
+    if (s.phase === 'act' && s.ctx.shop && ui.shopPicks) {
+      if (ui.shopPicks.length) {
+        var si = ui.shopPicks.shift();
+        if (s.ctx.shop.cards[si] && s.ctx.shop.left > 0 && s.players[a].cash >= K.shopPrice) { dispatch({ type: 'SHOP_BUY', player: a, idx: si }); return; }
+      }
+      ui.shopPicks = null;
+      ui.shopDone = true;
+    }
+    renderAll();
+  }
+
+  function startGame(config, seed, cmds, net) {
+    var gme = E.createGame(config, seed);
+    game = { config: config, seed: String(seed), state: gme.state, cmds: [], net: net || null, inbox: {} };
+    ui.waiting = false;
+    ui.log = []; ui.sheet = null; ui.playing = null; ui.focusCid = -1; ui.lastHuman = -1;
+    ui.humans = config.players.filter(function (p, i) { return p.kind === 'human' && isLocal(i); }).length;
+    ui.me = -1;
+    config.players.forEach(function (p, i) { if (p.kind === 'human' && isLocal(i) && ui.me < 0) ui.me = i; });
+    var events = gme.events;
+    if (cmds && cmds.length) {
+      for (var i = 0; i < cmds.length; i++) {
+        var r = E.applyCommand(game.state, cmds[i]);
+        if (!r.ok) throw new Error(r.error);
+        game.cmds.push(cmds[i]);
+      }
+      events = null;
+      logLine('已接續上一局的進度', true);
+      var a = E.actor(game.state);
+      if (a >= 0 && game.state.players[a].kind === 'human' && isLocal(a)) { ui.me = a; ui.lastHuman = a; }
+    }
+    $('setup').hidden = true;
+    $('modalLayer').innerHTML = '';
+    ui.modal = null;
+    scene.tweens.length = 0;
+    scene.setState(game.state);
+    scene.setPlayers(config.players.length);
+    scene.dice.forEach(function (d) { d.visible = false; });
+    view = makeView(game.state);
+    if (events) {
+      // 開場動畫前先顯示開局的股價
+      view.prices = D.companies.map(function (c) { return c.price0; });
+      view.quarter = 1; view.regime = 'flat'; view.macro = -1; view.prevIndex = 10000;
+      scene.showPrices(view.prices);
+    } else scene.syncAll();
+    scene.markTurn(game.state.turn);
+    if (g.innerWidth < 900) { scene.mode = 'follow'; scene.focusCell(game.state.players[game.state.turn].pos); } else scene.setMode('overview');
+    syncViewBtn();
+    save();
+    ui.busy = true;
+    renderAll();
+    var token = game;
+    (events ? playEvents(events) : Promise.resolve()).then(function () { if (token === game) step(); });
+  }
+
+  // ---------- 開局畫面 ----------
+  function readSetup() {
+    var st = ui.setup;
+    for (var i = 0; i < 4; i++) {
+      var n = $('pname' + i), k = $('pkind' + i);
+      if (n) st.players[i].name = n.value;
+      if (k) st.players[i].kind = k.value;
+    }
+    if ($('seedInput')) st.seed = $('seedInput').value;
+    if ($('cashInput')) { var cv = Math.round(+$('cashInput').value); st.cash = cv >= 10 && cv <= 10000 ? cv : 100; }
+  }
+  function renderSetup() {
+    var st = ui.setup, sv = loadSave(), rows = '';
+    for (var i = 0; i < st.n; i++) {
+      var p = st.players[i];
+      rows += '<div class="prow"><i style="background:' + COLORS[i] + '"></i><input id="pname' + i + '" maxlength="8" value="' + esc(p.name) + '" aria-label="玩家 ' + (i + 1) + ' 名字">' +
+        '<select id="pkind' + i + '" data-i="' + i + '" aria-label="玩家 ' + (i + 1) + ' 類型">' + [['human', '真人（這台裝置）']].concat(RL.net && RL.net.available() ? [['online', '線上朋友']] : []).concat([['conservative', '電腦・保守型'], ['aggressive', '電腦・激進型'], ['follower', '電腦・跟風型'], ['troll', '電腦・搞事型'], ['random', '電腦・隨便買']]).map(function (o) { return '<option value="' + o[0] + '"' + (p.kind === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; }).join('') + '</select></div>';
+    }
+    var resume = '';
+    if (sv) {
+      try {
+        var st2 = E.replay(sv.config, sv.seed, sv.cmds);
+        if (st2.phase !== 'over' && (!sv.net || (sv.net.role === 'host' && RL.net && RL.net.available()))) resume = '<button class="btn grow" data-act="resume">接續上一局（第 ' + Math.ceil(st2.quarter / 4) + ' 年第 ' + (((st2.quarter - 1) % 4) + 1) + ' 季）</button>';
+      } catch (err) { clearSave(); }
+    }
+    $('setup').innerHTML = '<div class="setup-card"><div class="brand"><h1>紅盤環線</h1><p>台股風格的走格子桌遊</p></div>' +
+      '<p class="lede">擲骰繞環線，踩到公司就能買股票。每季一張總經事件讓整個產業一起漲跌，五年後總資產最高的人獲勝。</p>' +
+      (g.THREE ? '' : '<p class="lede up">3D 元件沒有載入成功，請確認網路連線後重新整理。</p>') +
+      '<div class="field-label">人數</div><div class="seg">' + [2, 3, 4].map(function (n) { return '<button data-act="count" data-n="' + n + '" class="' + (st.n === n ? 'on' : '') + '">' + n + ' 人</button>'; }).join('') + '</div>' +
+      '<div class="field-label">玩家（真人可以同一台裝置輪流玩）</div>' + rows +
+      '<label class="seed"><span>起始資金（萬）</span><input id="cashInput" type="number" inputmode="numeric" min="10" max="10000" step="10" value="' + st.cash + '"></label>' +
+      '<label class="seed"><span>種子</span><input id="seedInput" maxlength="24" placeholder="留空就隨機；填同一組可以重現牌局" value="' + esc(st.seed) + '"></label>' +
+      (RL.net && RL.net.available() ? '<p class="muted">把玩家設成「線上朋友」就能開房間，把連結傳給朋友一起玩。</p>' : '') + '<div class="setup-acts"><button class="btn primary grow" data-act="start">' + (st.players.slice(0, st.n).some(function (p) { return p.kind === 'online'; }) ? '開房間' : '開始遊戲') + '</button><button class="btn" data-act="help">規則</button></div>' + (resume ? '<div class="setup-acts">' + resume + '</div>' : '') + '</div>';
+  }
+  function showSetup() { $('setup').hidden = false; renderSetup(); }
+
+  // ---------- 線上房間 ----------
+  var lobbyState = null; // {mode:'host'|'guest'|'join', room, msg, status, seats, seed}
+  function netHandlers() {
+    return {
+      ready: function () { if (lobbyState) { lobbyState.ready = true; if (!game || $('setup').hidden === false) renderLobbyIfOpen(); } },
+      lobby: function (m) { if (lobbyState) { lobbyState.msg = m; if (m.you >= 0) lobbyState.status = ''; renderLobbyIfOpen(); } },
+      status: function (s) { if (lobbyState && !$('setup').hidden) { lobbyState.status = s; renderLobby(); } else toast(esc(s)); },
+      full: function (m) { if (lobbyState) { lobbyState.status = m.started ? '這個房間已經開打，沒有你的座位。' : '房間滿了。'; lobbyState.dead = true; renderLobby(); } },
+      cmds: function () { return game ? game.cmds : []; },
+      cmd: function (n, cmd) { if (game && game.net && n >= game.cmds.length) { game.inbox[n] = cmd; pump(); } },
+      start: function (m) {
+        if (game && game.net && game.seed === String(m.seed)) {
+          // 斷線重連：補上漏掉的指令，並把對方沒收到的自己指令重送
+          var i;
+          for (i = m.cmds.length; i < game.cmds.length; i++) RL.net.sendCmd(i, game.cmds[i]);
+          for (i = game.cmds.length; i < m.cmds.length; i++) game.inbox[i] = m.cmds[i];
+          pump();
+          return;
+        }
+        try { startGame(m.config, m.seed, m.cmds, { room: RL.net.room, role: 'guest' }); } catch (err) { toast('牌局資料讀取失敗，請重新整理', 'err'); }
+      }
+    };
+  }
+  function renderLobbyIfOpen() { if (!$('setup').hidden) renderLobby(); }
+  function renderLobby() {
+    var L = lobbyState, html = '<div class="setup-card"><div class="brand"><h1>紅盤環線</h1><p>線上房間</p></div>';
+    if (L.mode === 'join') {
+      html += '<p class="lede">朋友邀你一起玩。輸入你的名字後加入房間。</p><label class="seed"><span>名字</span><input id="joinName" maxlength="8" value="' + esc(L.name || '') + '" placeholder="最多 8 個字"></label>' +
+        '<div class="setup-acts"><button class="btn primary grow" data-act="join">加入房間</button><button class="btn" data-act="help">規則</button></div>';
+    } else {
+      var m = L.msg, seats = m ? m.seats : [];
+      if (L.mode === 'host') {
+        html += '<p class="lede">把這個連結傳給朋友，他們點開就會加入。</p><div class="linkrow"><input id="roomLink" readonly value="' + esc(RL.net.link(L.room)) + '" aria-label="房間連結"><button class="btn small gold" data-act="copylink">複製</button></div>';
+        var hs = L.seats ? L.seats.filter(function (x) { return x.kind === 'human'; })[0] : null;
+        if (hs && !game) html += '<label class="seed"><span>你的名字</span><input id="hostName" maxlength="8" value="' + esc(hs.name) + '"></label>';
+        if (!L.ready) html += '<p class="muted">正在開房間…</p>';
+      } else if (!L.dead) html += '<p class="lede">' + (m ? '已加入房間，等房主按開始。' : '正在連到房間…') + '</p>';
+      if (seats.length) html += '<div class="field-label">座位</div>';
+      seats.forEach(function (s, i) {
+        var who = s.kind === 'ai' ? '電腦・' + AI.LABELS[s.style] : s.kind === 'human' ? '房主這邊' : s.taken ? (s.on ? '已加入' : '離線中') : '等朋友加入…';
+        html += '<div class="seatrow"><i style="background:' + COLORS[i] + '"></i><b>' + esc(s.kind === 'online' && !s.taken ? '空位' : s.name) + (m.you === i ? '（你）' : '') + '</b><span class="' + (s.kind === 'online' && !s.taken ? 'wait' : '') + '">' + who + '</span></div>';
+      });
+      if (L.mode === 'host') {
+        var open = seats.filter(function (s) { return s.kind === 'online' && !s.taken; }).length;
+        html += '<div class="setup-acts"><button class="btn primary grow" data-act="netstart"' + (open || !L.ready ? ' disabled' : '') + '>' + (open ? '還有 ' + open + ' 個空位' : '開始遊戲') + '</button><button class="btn" data-act="netcancel">取消</button></div>';
+      }
+    }
+    if (L.status) html += '<p class="muted" aria-live="polite">' + esc(L.status) + '</p>';
+    if (L.dead) html += '<div class="setup-acts"><button class="btn grow" data-act="netcancel">自己開一局</button></div>';
+    $('setup').innerHTML = html + '</div>';
+    $('setup').hidden = false;
+  }
+  function openLobby() {
+    readSetup();
+    var st = ui.setup, used = {}, seats = [];
+    for (var i = 0; i < st.n; i++) {
+      var p = st.players[i], isAi = p.kind !== 'human' && p.kind !== 'online';
+      var name = p.kind === 'online' ? '朋友' : (p.name || '').trim() || (isAi ? AI.NAMES[p.kind] : '玩家 ' + (i + 1));
+      if (p.kind === 'human' && name === '你') name = '房主';
+      if (p.kind !== 'online') { var base = name, k = 2; while (used[name]) name = base + k++; used[name] = 1; }
+      seats.push({ name: name, kind: isAi ? 'ai' : p.kind, style: isAi ? p.kind : null, cid: null });
+    }
+    lobbyState = { mode: 'host', room: RL.net.newRoom(), seats: seats, seed: (st.seed || '').trim(), cash: st.cash, msg: null, status: '', ready: false };
+    lobbyState.msg = { seats: seats.map(function (s) { return { name: s.name, kind: s.kind, style: s.style, taken: s.kind !== 'online', on: s.kind !== 'online' }; }), you: -1 };
+    RL.net.host(lobbyState.room, seats, null, netHandlers());
+    renderLobby();
+  }
+  function netStart() {
+    var L = lobbyState, used = {};
+    var players = L.seats.map(function (s) {
+      var name = s.name, base = name, k = 2;
+      while (used[name]) name = base + k++;
+      used[name] = 1;
+      return s.kind === 'ai' ? { name: name, kind: 'ai', style: s.style } : { name: name, kind: 'human', owner: s.kind === 'online' ? s.cid : RL.net.cid };
+    });
+    var seed = L.seed || Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36), config = { players: players, startCash: (L.cash || 100) * 10000 };
+    RL.net.begin(config, seed);
+    startGame(config, seed, null, { room: L.room, role: 'host' });
+  }
+  function resumeHost(sv) {
+    var seats = sv.config.players.map(function (p) {
+      return p.kind === 'ai' ? { name: p.name, kind: 'ai', style: p.style, cid: null } : p.owner === RL.net.cid ? { name: p.name, kind: 'human', cid: null } : { name: p.name, kind: 'online', cid: p.owner };
+    });
+    lobbyState = { mode: 'host', room: sv.net.room, seats: seats, msg: null, status: '', ready: false };
+    startGame(sv.config, sv.seed, sv.cmds, sv.net);
+    RL.net.host(sv.net.room, seats, { config: sv.config, seed: sv.seed }, netHandlers());
+    toast('房間已重新開啟，朋友那邊會自動接上');
+  }
+
+  function startFromSetup(seedOverride) {
+    readSetup();
+    var st = ui.setup, used = {}, players = [];
+    for (var i = 0; i < st.n; i++) {
+      var p = st.players[i], name = (p.name || '').trim() || (p.kind === 'human' ? '玩家 ' + (i + 1) : AI.NAMES[p.kind]);
+      var base = name, k = 2;
+      while (used[name]) name = base + k++;
+      used[name] = 1;
+      players.push(p.kind === 'human' ? { name: name, kind: 'human' } : { name: name, kind: 'ai', style: p.kind });
+    }
+    var seed = seedOverride || (st.seed || '').trim() || Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+    startGame({ players: players, startCash: st.cash * 10000 }, seed);
+  }
+
+  // ---------- 操作 ----------
+  function applyLabels() {
+    if (scene) scene.setCompanyLabels(!ui.hideLabels);
+    var b = $('btnLabels');
+    if (b) { b.classList.toggle('off', !!ui.hideLabels); b.setAttribute('aria-pressed', ui.hideLabels ? 'false' : 'true'); }
+  }
+  function syncViewBtn() { $('btnView').textContent = scene.mode === 'overview' ? '跟隨' : '全覽'; }
+  var ACT = {
+    view: function () {
+      if (scene.mode === 'overview') scene.setMode('follow', game ? scene.pieces[view.turn].userData.cell : 0);
+      else scene.setMode('overview');
+      syncViewBtn();
+    },
+    labels: function () {
+      ui.hideLabels = !ui.hideLabels;
+      try { localStorage.setItem('hongpan-hide-labels', ui.hideLabels ? '1' : ''); } catch (err) { /* 略過 */ }
+      applyLabels();
+    },
+    speed: function () {
+      ui.speed = SPEEDS[(SPEEDS.indexOf(ui.speed) + 1) % SPEEDS.length];
+      scene.speed = ui.speed;
+      $('btnSpeed').textContent = ui.speed + '×';
+    },
+    help: function () { ui.sheet = { type: 'help' }; renderSheetFree(); },
+    helptab: function (el) { ui.helpTab = el.dataset.tab; renderSheetFree(); },
+    sort: function (el) { ui.sortBy = el.dataset.by; renderSheet(); },
+    market: function () { openSheet({ type: 'market' }); },
+    pickstock: function () { openSheet({ type: 'market', pick: true }); },
+    hand: function () { if (ui.me >= 0) openSheet({ type: 'hand' }); },
+    log: function () { openSheet({ type: 'log' }); },
+    results: function () { openSheet({ type: 'results' }); },
+    restab: function (el) { ui.resTab = el.dataset.tab; renderSheet(); },
+    resp: function (el) { ui.resTab = 'stocks'; ui.resP = +el.dataset.pid; ui.resOpen = -1; renderSheet(); },
+    resrow: function (el) {
+      var c = +el.dataset.cid, body = document.querySelector('#sheetLayer .sheet-body'), top = body ? body.scrollTop : 0;
+      ui.resOpen = ui.resOpen === c ? -1 : c; renderSheet();
+      body = document.querySelector('#sheetLayer .sheet-body'); if (body) body.scrollTop = top;
+    },
+    player: function (el) { openSheet({ type: 'player', pid: +el.dataset.pid }); },
+    close: function () { ui.sheet = null; ui.playing = null; renderSheetFree(); },
+    'close-bg': function (el, ev) { if (ev.target === el) ACT.close(); },
+    modal: function (el) { if (ui.modal) ui.modal(+el.dataset.i); },
+    stock: function (el) {
+      var cid = +el.dataset.cid;
+      if (ui.sheet && ui.sheet.pick) { ui.focusCid = cid; ui.qtyBuy = 1; ui.sheet = null; renderAll(); return; }
+      ui.qtyBuy = 1; ui.qtySell = 1;
+      openSheet({ type: 'stock', cid: cid });
+    },
+    qty: function (el) {
+      var kind = el.dataset.kind, d = el.dataset.d, key = kind === 'buy' ? 'qtyBuy' : kind === 'merge' ? 'qtyMerge' : 'qtySell';
+      if (!ui[key]) ui[key] = 1;
+      ui[key] = d === 'max' ? 999 : Math.max(1, ui[key] + +d);
+      renderPanel(); renderSheet();
+    },
+    buy: function (el) { var me = myTurn(); if (me >= 0) { var q = ui.qtyBuy; ui.qtyBuy = 1; dispatch({ type: 'BUY', player: me, cid: +el.dataset.cid, qty: q }); } },
+    merge: function (el) { var me = myTurn(); if (me >= 0) { var q = ui.qtyMerge || 1; ui.qtyMerge = 1; dispatch({ type: 'MERGE', player: me, cid: +el.dataset.cid, from: ui.mergeFrom, qty: q }); } },
+    tmode: function (el) { ui.tradeMode = el.dataset.mode; renderPanel(); renderSheet(); },
+    mtarget: function (el) { ui.mergeFrom = +el.dataset.pid; ui.qtyMerge = 1; renderPanel(); renderSheet(); },
+    sell: function (el) { var me = myTurn(); if (me >= 0) { var q = ui.qtySell; ui.qtySell = 1; dispatch({ type: 'SELL', player: me, cid: +el.dataset.cid, qty: q }); } },
+    meet: function (el) { var me = myTurn(); if (me >= 0) dispatch({ type: 'MEETING_PICK', player: me, idx: +el.dataset.i }); },
+    shopbuy: function (el) { var me = myTurn(); if (me >= 0) dispatch({ type: 'SHOP_BUY', player: me, idx: +el.dataset.i }); },
+    cbdir: function (el) { var me = myTurn(); if (me >= 0) dispatch({ type: 'CB', player: me, dir: +el.dataset.dir }); },
+    roll: function () { var me = myTurn(); if (me >= 0) dispatch({ type: 'ROLL', player: me }); },
+    roll1: function () { var me = myTurn(); if (me >= 0) dispatch({ type: 'ROLL', player: me, dice: 1 }); },
+    move: function () { var me = myTurn(); if (me >= 0) dispatch({ type: 'MOVE', player: me }); },
+    end: function () { var me = myTurn(); if (me >= 0) { ui.sheet = null; dispatch({ type: 'END_TURN', player: me }); } },
+    reroll: function () {
+      var me = myTurn();
+      if (me < 0) return;
+      var h = game.state.players[me].hand;
+      for (var i = 0; i < h.length; i++) if (h[i].type === 'reroll') { ui.sheet = null; dispatch({ type: 'PLAY_CARD', player: me, uid: h[i].uid }); return; }
+    },
+    play: function (el) {
+      var me = myTurn();
+      if (me < 0) return;
+      var cmd = { type: 'PLAY_CARD', player: me, uid: +el.dataset.uid };
+      if (el.dataset.steps) cmd.steps = +el.dataset.steps;
+      if (el.dataset.target) cmd.target = +el.dataset.target;
+      if (el.dataset.cid) cmd.cid = +el.dataset.cid;
+      ui.sheet = null;
+      dispatch(cmd);
+    },
+    discard: function (el) { var me = myTurn(); if (me >= 0) dispatch({ type: 'DISCARD', player: me, uid: +el.dataset.uid }); },
+    count: function (el) { readSetup(); ui.setup.n = +el.dataset.n; renderSetup(); },
+    start: function () {
+      if (!g.THREE) return;
+      readSetup();
+      if (ui.setup.players.slice(0, ui.setup.n).some(function (p) { return p.kind === 'online'; })) openLobby();
+      else startFromSetup();
+    },
+    resume: function () {
+      var sv = loadSave();
+      if (!sv) return;
+      try { if (sv.net) resumeHost(sv); else startGame(sv.config, sv.seed, sv.cmds); } catch (err) { clearSave(); renderSetup(); }
+    },
+    again: function () {
+      if (game && game.net) { clearSave(); g.location.href = g.location.origin + g.location.pathname; return; }
+      ui.sheet = null; renderSheetFree(); clearSave(); showSetup();
+    },
+    join: function () {
+      var name = RL.net.clean($('joinName').value);
+      try { localStorage.setItem('hongpan-name', name); } catch (err) { /* 略過 */ }
+      lobbyState = { mode: 'guest', room: lobbyState.room, name: name, msg: null, status: '連線中…' };
+      RL.net.join(lobbyState.room, name, netHandlers());
+      renderLobby();
+    },
+    netstart: function () { netStart(); },
+    netcancel: function () { RL.net.close(); lobbyState = null; g.location.href = g.location.origin + g.location.pathname; },
+    copylink: function () {
+      var el = $('roomLink');
+      el.focus(); el.select();
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(el.value).then(function () { toast('連結已複製'); }, function () { toast('請長按或按 Ctrl+C 複製連結'); });
+      else toast('請長按或按 Ctrl+C 複製連結');
+    },
+    sameseed: function () { var cfg = game.config, seed = game.seed; ui.sheet = null; startGame(cfg, seed); }
+  };
+  function renderSheetFree() {
+    // 說明頁在開局前也能開
+    if (ui.sheet && ui.sheet.type === 'help') { $('sheetLayer').innerHTML = helpSheet(); $('sheetLayer').dataset.type = 'help'; }
+    else if (game) renderSheet();
+    else $('sheetLayer').innerHTML = '';
+  }
+  function onClick(ev) {
+    var el = ev.target.closest('[data-act]');
+    if (!el || el.disabled) return;
+    var fn = ACT[el.dataset.act];
+    if (fn) fn(el, ev);
+  }
+
+  function onPick(cell) {
+    if (!game) return;
+    var c = D.board[cell];
+    if (c.type === 'company') { ui.qtyBuy = 1; ui.qtySell = 1; openSheet({ type: 'stock', cid: c.cid }); }
+    else toast('<b>' + c.name + '</b>　' + CELL_TEXT[c.type]);
+  }
+
+  function boot(data) {
+    document.addEventListener('click', onClick);
+    document.addEventListener('change', function (ev) {
+      var el = ev.target;
+      if (el.id === 'hostName' && lobbyState && lobbyState.seats) {
+        var hs = lobbyState.seats.filter(function (x) { return x.kind === 'human'; })[0];
+        if (hs) { hs.name = RL.net.clean(el.value) || '房主'; RL.net.refresh(); }
+        return;
+      }
+      if (el.id && el.id.indexOf('pkind') === 0) {
+        readSetup();
+        var i = +el.dataset.i, p = ui.setup.players[i], defaults = ['你', '朋友', '玩家 ' + (i + 1), AI.NAMES.conservative, AI.NAMES.aggressive, AI.NAMES.follower, AI.NAMES.random, AI.NAMES.troll, ''];
+        if (defaults.indexOf((p.name || '').trim()) >= 0) p.name = p.kind === 'human' ? (i === 0 ? '你' : '玩家 ' + (i + 1)) : p.kind === 'online' ? '朋友' : AI.NAMES[p.kind];
+        renderSetup();
+      }
+    });
+    document.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Escape') { if (ui.sheet) ACT.close(); }
+    });
+    if (!g.THREE) { showSetup(); return; }
+    scene = new RL.Scene($('cvwrap'), $('cv'));
+    scene.onPick = onPick;
+    scene.onMode = syncViewBtn;
+    try { ui.hideLabels = localStorage.getItem('hongpan-hide-labels') === '1'; } catch (err) { /* 略過 */ }
+    applyLabels();
+    if (document.fonts && document.fonts.load) {
+      var txt = D.companies.map(function (c) { return c.name; }).join('') + '結算站策略教室產業快訊證券交易所茶水間黑天鵝紅盤環線多頭盤整空頭年季第';
+      Promise.all([document.fonts.load('700 40px "Noto Sans TC"', txt), document.fonts.load('700 40px "Barlow Semi Condensed"', '0123456789.,%'), document.fonts.load('700 40px "LXGW WenKai TC"', '紅盤環線')])
+        .then(function () { scene.redrawLabels(); }).catch(function () { /* 用系統字型 */ });
+    }
+    var retheme = function () { scene.applyTheme(); };
+    if (g.matchMedia) { var mq = g.matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', retheme); }
+    if (g.MutationObserver) new MutationObserver(retheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    var hot = g.claude && g.claude.hot;
+    if (hot && hot.snapshot) hot.snapshot(function () { return game ? { config: game.config, seed: game.seed, cmds: game.cmds } : {}; });
+    if (data && data.config && data.cmds) {
+      try { startGame(data.config, data.seed, data.cmds); return; } catch (err) { /* 接不上就回到開局畫面 */ }
+    }
+    var room = RL.net && RL.net.available() ? RL.net.roomFromUrl() : '';
+    if (room) {
+      var sv = loadSave(), nm = '';
+      if (sv && sv.net && sv.net.role === 'host' && sv.net.room === room) { try { resumeHost(sv); return; } catch (err) { clearSave(); } }
+      try { nm = localStorage.getItem('hongpan-name') || ''; } catch (err) { /* 略過 */ }
+      lobbyState = { mode: 'join', room: room, name: nm, status: '' };
+      renderLobby();
+      return;
+    }
+    showSetup();
+  }
+
+  RL.app = { boot: boot, get game() { return game; }, dispatch: dispatch };
+  var hot0 = g.claude && g.claude.hot;
+  function go() { if (hot0 && hot0.ready) hot0.ready(boot); else boot((hot0 && hot0.data) || {}); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+</script>
+</body>
+</html>
