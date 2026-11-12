@@ -566,6 +566,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     <li>把連結傳給朋友，他點開、輸入名字就會加入。所有空位都有人後，房主按「開始遊戲」。</li>
     <li>每個人只看得到自己的手牌，輪到自己才能操作。電腦對手和同機真人可以混在同一局。</li>
     <li>斷線或重新整理後，再開同一個連結會接回原本的座位。房主重新整理後按「接續上一局」。</li>
+    <li>一局結束後，房主按「回到房間・再開一局」，朋友按「回到房間」，大家留在原本的座位，不用重新傳連結。</li>
     <li>在 Claude 的 Artifact 頁面上不能連線，只能單機或同一台裝置輪流玩。</li>
   </ul>
 
@@ -578,6 +579,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 </template>
 
 <template id="tplBalance">
+  <p><b>第 22 版：線上局結束後可以「回到房間」，朋友留在座位上，房主直接開下一局。</b></p>
   <p><b>第 21 版：當回合買進的股票不能當回合賣出；查帳罰款改成付給出卡的人（檢舉獎金）。</b></p>
   <p><b>第 20 版：景氣轉向除了翻轉本季燈號，景氣分數也往新方向推 4 分。</b></p>
   <p><b>第 19 版：刪掉三顆骰，新增「直達結算站」（2 張）：不擲骰直接回結算站，拿遠端下單和一張策略卡。</b></p>
@@ -2557,6 +2559,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     cid: cid, available: available, roomFromUrl: roomFromUrl, link: link, newRoom: newRoom, clean: clean,
     host: host, begin: begin, join: join, sendCmd: sendCmd, close: reset,
     refresh: function () { if (S && S.role === 'host' && !S.game) lobby(); },
+    // 房主：這局結束，回到同一個房間（座位和朋友都保留），等下一局開始
+    reopen: function () { if (S && S.role === 'host') { S.game = null; lobby(); } },
     get role() { return S ? S.role : null; }, get room() { return S ? S.room : ''; }
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
@@ -4307,7 +4311,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
         '<span class="sub" data-act="resp" data-pid="' + r.p + '">現金 ' + wan1(r.cash) + '・持股 ' + wan1(r.total - r.cash) + '・繞圈 ' + p.laps + ' 次<br>累計領到 股利 ' + wan1(p.divGot || 0) + '・股東報酬 ' + wan1(p.majorGot || 0) + '・利息 ' + wan1(p.interestGot || 0) + '<br><u>看個股損益 ›</u></span>';
     }).join('') + '</div>';
     html += '<div class="block" style="margin-top:14px"><h3>總資產走勢</h3>' + chartSvg() + '</div>';
-    html += '<div class="block"><div class="muted">本局種子：<span class="num">' + esc(game.seed) + '</span>（同一組種子與相同操作可以重現同一局）</div><div class="card-acts"><button class="btn primary grow" data-act="again">' + (game.net ? '回到開局畫面' : '再玩一局') + '</button>' + (game.net ? '' : '<button class="btn" data-act="sameseed">同一個種子重玩</button>') + '</div></div>';
+    html += '<div class="block"><div class="muted">本局種子：<span class="num">' + esc(game.seed) + '</span>（同一組種子與相同操作可以重現同一局）</div><div class="card-acts"><button class="btn primary grow" data-act="again">' + (game.net ? (game.net.role === 'host' ? '回到房間・再開一局' : '回到房間') : '再玩一局') + '</button>' + (game.net ? '<button class="btn" data-act="leaveroom">離開房間</button>' : '<button class="btn" data-act="sameseed">同一個種子重玩</button>') + '</div></div>';
     var rt = ui.resTab || 'players';
     var tabs = '<div class="tabs">' + [['players', '玩家排名'], ['stocks', '個股損益'], ['market', '產業與大盤']].map(function (x) { return '<button class="' + (rt === x[0] ? 'on' : '') + '" data-act="restab" data-tab="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '</div>';
     return sheetWrap('五年結算', tabs + (rt === 'market' ? marketResult() : rt === 'stocks' ? stockResult() : html));
@@ -4801,7 +4805,14 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   function netHandlers() {
     return {
       ready: function () { if (lobbyState) { lobbyState.ready = true; if (!game || $('setup').hidden === false) renderLobbyIfOpen(); } },
-      lobby: function (m) { if (lobbyState) { lobbyState.msg = m; if (m.you >= 0) lobbyState.status = ''; renderLobbyIfOpen(); } },
+      lobby: function (m) {
+        if (!lobbyState) return;
+        var reopened = lobbyState.msg && lobbyState.msg.started && !m.started && game && game.net && game.state.phase === 'over';
+        lobbyState.msg = m;
+        if (m.you >= 0) lobbyState.status = '';
+        if (reopened && $('setup').hidden) toast('房主回到房間了，按「回到房間」就能一起開下一局');
+        renderLobbyIfOpen();
+      },
       status: function (s) { if (lobbyState && !$('setup').hidden) { lobbyState.status = s; renderLobby(); } else toast(esc(s)); },
       full: function (m) { if (lobbyState) { lobbyState.status = m.started ? '這個房間已經開打，沒有你的座位。' : '房間滿了。'; lobbyState.dead = true; renderLobby(); } },
       cmds: function () { return game ? game.cmds : []; },
@@ -4832,7 +4843,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
         var hs = L.seats ? L.seats.filter(function (x) { return x.kind === 'human'; })[0] : null;
         if (hs && !game) html += '<label class="seed"><span>你的名字</span><input id="hostName" maxlength="8" value="' + esc(hs.name) + '"></label>';
         if (!L.ready) html += '<p class="muted">正在開房間…</p>';
-      } else if (!L.dead) html += '<p class="lede">' + (m ? '已加入房間，等房主按開始。' : '正在連到房間…') + '</p>';
+      } else if (!L.dead) html += '<p class="lede">' + (m ? (m.started ? '上一局結束了，等房主回到房間開下一局。' : '已加入房間，等房主按開始。') : '正在連到房間…') + '</p>';
       if (seats.length) html += '<div class="field-label">座位</div>';
       seats.forEach(function (s, i) {
         var who = s.kind === 'ai' ? '電腦・' + AI.LABELS[s.style] : s.kind === 'human' ? '房主這邊' : s.taken ? (s.on ? '已加入' : '離線中') : '等朋友加入…';
@@ -4879,7 +4890,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     var seats = sv.config.players.map(function (p) {
       return p.kind === 'ai' ? { name: p.name, kind: 'ai', style: p.style, cid: null } : p.owner === RL.net.cid ? { name: p.name, kind: 'human', cid: null } : { name: p.name, kind: 'online', cid: p.owner };
     });
-    lobbyState = { mode: 'host', room: sv.net.room, seats: seats, msg: null, status: '', ready: false };
+    lobbyState = { mode: 'host', room: sv.net.room, seats: seats, cash: Math.round(sv.config.startCash / 10000) || 100, msg: null, status: '', ready: false };
     startGame(sv.config, sv.seed, sv.cmds, sv.net);
     RL.net.host(sv.net.room, seats, { config: sv.config, seed: sv.seed }, netHandlers());
     toast('房間已重新開啟，朋友那邊會自動接上');
@@ -4995,6 +5006,22 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       try { if (sv.net) resumeHost(sv); else startGame(sv.config, sv.seed, sv.cmds); } catch (err) { clearSave(); renderSetup(); }
     },
     again: function () {
+      if (game && game.net && lobbyState && RL.net && RL.net.role) {
+        // 回到同一個房間：連線不斷，朋友留在座位上
+        clearSave();
+        ui.sheet = null; renderSheetFree();
+        if (game.net.role === 'host') {
+          lobbyState.seed = '';
+          lobbyState.cash = Math.round(game.config.startCash / 10000) || lobbyState.cash || 100;
+          lobbyState.ready = true;
+          RL.net.reopen();
+          lobbyState.status = '已回到房間，朋友回來後就能開下一局';
+        } else {
+          lobbyState.status = lobbyState.msg && lobbyState.msg.started ? '等房主回到房間開下一局…' : '';
+        }
+        renderLobby();
+        return;
+      }
       if (game && game.net) { clearSave(); g.location.href = g.location.origin + g.location.pathname; return; }
       ui.sheet = null; renderSheetFree(); clearSave(); showSetup();
     },
@@ -5006,6 +5033,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       renderLobby();
     },
     netstart: function () { netStart(); },
+    leaveroom: function () { clearSave(); if (RL.net) RL.net.close(); lobbyState = null; g.location.href = g.location.origin + g.location.pathname; },
     netcancel: function () { RL.net.close(); lobbyState = null; g.location.href = g.location.origin + g.location.pathname; },
     copylink: function () {
       var el = $('roomLink');
