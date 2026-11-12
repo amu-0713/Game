@@ -491,7 +491,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     <li><b>盤整季</b>（22～27 分）：季末全市場不變，現金年利率 2%；一般買進原價、併購溢價 10%、賣出交易成本 1%。</li>
     <li><b class="down">空頭季</b>（21 分以下）：<b>季末全市場 −8%</b>，現金年利率 6%；一般買進打九折、併購溢價只要 5%、賣出交易成本 1%。</li>
   </ul>
-  <p>季末漲跌看的是<b>季末當下</b>的燈號：有人踩到央行改了分數、或打出景氣轉向，這一季的季末就跟著變。空頭季全倉會大賠，記得看燈號。</p>
+  <p><b>燈號每季開盤定案</b>：這一季的買進折扣、併購溢價、賣出成本、季末漲跌和利息，都照開盤亮的燈號。央行、景氣轉向、黑天鵝只會改景氣分數，影響的是下一季開盤的燈號。空頭季全倉會大賠，記得看燈號，也要預測下一季。</p>
   <p><b>個股事件</b>：從第二季開始，每季開盤有六成機率，隨機一家公司財報爆雷或接到大單。之後這一季每位玩家移動時，這家公司再跌或漲 5%～7%（四人局共四次）。早點發現就能趁早進場或逃跑。</p>
   <p><b>封關年（第 5 年）</b>：總經事件的影響加倍（照常提前一季預告），每季一定有個股事件，而且每次移動漲跌 8%～10%。領先的人要守住，落後的人可以放手一搏。</p>
   <p><b>經濟預告</b>：每季開盤後會公布下一季的兩個候選總經事件，下一季會從這兩個裡面各半機率發生一個。所有人看得到，可以提前佈局。</p>
@@ -506,7 +506,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     <li><b>證券交易所</b>（角落）：可以買進任一家公司，最多 10 張，也可以併購。</li>
     <li><b>黑天鵝</b>（角落，結算站正對面）：翻開一張全市場大事件，所有人同時受影響。</li>
     <li><b>卡片交易所</b>（角落）：經過時貨架有 3 張卡，可以買 1 張；停在這裡貨架有 5 張，可以買 2 張。每張 3 萬，只能買不能換。</li>
-    <li><b>央行</b>（角落）：由你決定降息（景氣分數 +3）或升息（景氣分數 −3），本季燈號馬上跟著變。</li>
+    <li><b>央行</b>（角落）：由你決定降息（景氣分數 +3）或升息（景氣分數 −3），影響下一季開盤的燈號。</li>
     <li><b>法說會</b>（長邊中間）：隨機一家公司擲骰上漲 5%～10%。</li>
     <li><b>法會</b>（長邊中間）：法會辦得不太順利，隨機一家公司擲骰下跌 5%～10%。</li>
   </ul>
@@ -579,6 +579,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 </template>
 
 <template id="tplBalance">
+  <p><b>第 23 版：燈號每季開盤定案。景氣轉向改成選方向推景氣分數 ±8、影響下一季；央行也只改分數。玩家面板顯示今年被查帳次數與年底預估罰款。</b></p>
   <p><b>第 22 版：線上局結束後可以「回到房間」，朋友留在座位上，房主直接開下一局。</b></p>
   <p><b>第 21 版：當回合買進的股票不能當回合賣出；查帳罰款改成付給出卡的人（檢舉獎金）。</b></p>
   <p><b>第 20 版：景氣轉向除了翻轉本季燈號，景氣分數也往新方向推 4 分。</b></p>
@@ -769,7 +770,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     meetPass: 2, meetPassKeep: 1, meetLand: 3, meetLandKeep: 2,
     shopPrice: 30000, shopPass: 3, shopPassBuy: 1, shopLand: 5, shopLandBuy: 2,
     cbStep: 3,
-    flipScore: 4,
+    flipScore: 8,
     briefBase: 4, ritualBase: 4,
     // 季末依燈號全市場漂移（多頭漲、空頭跌），燈號在季中被央行或景氣轉向改變也算數
     regimeDrift: { bull: 0.05, flat: 0, bear: -0.08 },
@@ -919,7 +920,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     audit: { name: '查帳', cat: 'attack', when: 'turn', count: 2, text: '指定一位對手，今年年底罰他股票市值的 5%，罰款給你（檢舉獎金）。被查幾次罰幾份；他現金不夠就強制賣股。', need: 'target' },
     tender: { name: '公開收購', cat: 'attack', when: 'turn', count: 2, text: '這回合不用踩到，可以向對手併購任一家公司，最多 5 張。' },
     bull: { name: '產業利多', cat: 'neutral', when: 'act', count: 3, text: '你站著的公司所屬產業，擲一顆骰上漲 5%～10%。' },
-    flip: { name: '景氣轉向', cat: 'neutral', when: 'turn', count: 2, text: '這一季的燈號立刻翻轉（多頭與空頭互換），景氣分數也往新方向推 4 分，盤整時不能用。' }
+    flip: { name: '景氣轉向', cat: 'neutral', when: 'turn', count: 2, text: '選一個方向，景氣分數立刻 +8 或 −8。本季燈號不變，下一季開盤照分數決定燈號。', need: 'dir' }
   };
   var CAT_NAMES = { action: '行動', attack: '對抗', neutral: '中立', fixed: '固定' };
     Object.keys(cards).forEach(function (k) { cards[k].id = k; });
@@ -1644,7 +1645,6 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     if (c.dir !== 1 && c.dir !== -1) return '請選擇升息或降息';
     var from = s.score, before = s.regime;
     s.score = clamp(s.score + c.dir * K.cbStep, K.scoreMin, K.scoreMax);
-    if (!s.flipped) s.regime = regimeOf(s.score);
     s.ctx.cb = false;
     ev.push({ t: 'cb', p: s.turn, dir: c.dir, from: from, score: s.score, regime: s.regime, regimeFrom: before });
   };
@@ -1676,7 +1676,6 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     if (def.when === 'act' && ph !== 'act') return false;
     if (type === 'bear' || type === 'bull') return cell.type === 'company' && !s.cardHit[D.companies[cell.cid].sector];
     if (type === 'treasury') { for (var i = 0; i < NC; i++) if (s.major[i] === pid) return !s.ctx.treasury; return false; }
-    if (type === 'flip') return s.regime !== 'flat' && !s.flipped;
     if (type === 'hostile') return !s.ctx.noPremium;
     if (type === 'lock') return lockable(s, pid).length > 0;
     return true;
@@ -1689,6 +1688,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     if (!canPlay(s, pid, type)) return '現在不能出「' + def.name + '」';
     if (type === 'pick' && !(c.steps >= 1 && c.steps <= 6 && c.steps === Math.floor(c.steps))) return '請選要走幾步';
     if (type === 'audit' && !(c.target >= 0 && c.target < s.players.length && c.target !== pid)) return '請選一位對手';
+    if (type === 'flip' && c.dir !== 1 && c.dir !== -1) return '請選要往多頭還是空頭推';
     if (type === 'lock' && lockable(s, pid).indexOf(c.cid) < 0) return '請選一家你當大股東、還沒鎖定的公司';
     p.hand.splice(hi, 1);
     s.cardDiscard.push(type);
@@ -1729,12 +1729,10 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
         e.target = c.target; e.times = tq.audits = tq.auditBy.length;
         break;
       case 'flip':
-        s.regime = s.regime === 'bull' ? 'bear' : 'bull';
-        s.flipped = true;
-        e.regime = s.regime;
-        // 景氣分數也往新方向推，下一季比較可能延續
+        // 只推景氣分數，本季燈號不變，影響下一季開盤的燈號
+        e.dir = c.dir;
         e.scoreFrom = s.score;
-        s.score = Math.max(K.scoreMin, Math.min(K.scoreMax, s.score + (s.regime === 'bull' ? K.flipScore : -K.flipScore)));
+        s.score = clamp(s.score + c.dir * K.flipScore, K.scoreMin, K.scoreMax);
         e.score = s.score;
         break;
       case 'bear':
@@ -1909,6 +1907,15 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   function adjReserve(s, pid, r) { var m = finalMode(s, pid); return m === 'gamble' ? 0 : m === 'defend' ? r + 0.2 : r; }
   function adjCap(s, pid, c) { return finalMode(s, pid) === 'gamble' ? Math.max(c, 0.6) : c; }
   // 預估下一季的景氣分數與燈號（預告平均、反向拉扯、燈號慣性）
+  // 推 dir 方向之後，下季預估燈號是否往想要的方向變
+  function flipChanges(s, dir) {
+    var order = { bear: 0, flat: 1, bull: 2 }, before = nextRegime(s);
+    var keep = s.score;
+    s.score = Math.max(K.scoreMin, Math.min(K.scoreMax, s.score + dir * K.flipScore));
+    var after = nextRegime(s);
+    s.score = keep;
+    return (order[after] - order[before]) * dir > 0;
+  }
   function nextRegime(s) {
     var sc = s.score;
     if (s.forecast) sc += Math.round((D.macro[s.forecast[0]].score + D.macro[s.forecast[1]].score) / 2 * (K.scoreScale || 1));
@@ -2103,9 +2110,9 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     }
     if (s.phase === 'pre' || s.phase === 'act') {
       if (card(p, 'flip')) {
-        // 季末依燈號漂移：持股多的人想把空頭翻成多頭，現金多的人想把多頭翻成空頭（九折撿便宜、對手持股下跌）
-        if (s.regime === 'bear' && stockW > 0.4 && (cmd = play('flip'))) return cmd;
-        if (s.regime === 'bull' && stockW < 0.3 && (cmd = play('flip'))) return cmd;
+        // 推下一季：持股多的人想讓下季變多頭，現金多的人想讓下季變空頭（九折撿便宜）；要真的改變下季的預估燈號才出
+        var want = stockW > 0.45 ? 1 : stockW < 0.25 ? -1 : 0;
+        if (want && flipChanges(s, want) && (cmd = play('flip', { dir: want }))) return cmd;
       }
       if (card(p, 'audit')) {
         // 罰的是股票市值：挑持股最多的對手
@@ -2185,6 +2192,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
         var c = pick(playable, rnd(s, pid, 3)), cmd = { type: 'PLAY_CARD', player: pid, uid: c.uid };
         if (c.type === 'pick') cmd.steps = 1 + Math.floor(rnd(s, pid, 4) * 6);
         if (c.type === 'audit') { var others = []; for (var o2 = 0; o2 < s.players.length; o2++) if (o2 !== pid) others.push(o2); cmd.target = pick(others, rnd(s, pid, 5)); }
+        if (c.type === 'flip') cmd.dir = rnd(s, pid, 7) < 0.5 ? 1 : -1;
         if (c.type === 'lock') cmd.cid = pick(E.lockable(s, pid), rnd(s, pid, 6));
         return cmd;
       }
@@ -2253,7 +2261,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       }
     }
     if ((c = play('audit', { target: ld }))) return c;
-    if (s.regime === 'bull' && heavier && (c = play('flip'))) return c;
+    if (heavier && flipChanges(s, -1) && (c = play('flip', { dir: -1 }))) return c;
     if (s.phase !== 'act') return null;
     var cell = D.board[p.pos];
     if (cell.type === 'company' && sectorValue(s, ld, D.companies[cell.cid].sector) > sectorValue(s, pid, D.companies[cell.cid].sector) + 100000 && (c = play('bear'))) return c;
@@ -2387,7 +2395,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return null;
   }
 
-  RL.ai = { next: next, score: score, NAMES: NAMES, LABELS: LABELS, STYLES: STYLES };
+  RL.ai = { next: next, score: score, nextRegime: nextRegime, NAMES: NAMES, LABELS: LABELS, STYLES: STYLES };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 </script>
 <script>
@@ -3560,7 +3568,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     brief: '停在這裡會舉辦法說會：隨機一家公司擲骰上漲 5%～10%。',
     ritual: '停在這裡會舉辦法會，但辦得不太順利：隨機一家公司擲骰下跌 5%～10%。',
     shop: '經過可以從 3 張卡裡買 1 張，停在這裡可以從 5 張裡買 2 張，每張 3 萬。',
-    cb: '停在這裡由你決定央行政策：降息讓景氣分數 +3，升息讓景氣分數 −3。',
+    cb: '停在這裡由你決定央行政策：降息讓景氣分數 +3，升息讓景氣分數 −3。本季燈號不變，影響下一季。',
     swan: '停在這裡會翻開一張黑天鵝，全市場所有人同時受影響。'
   };
   var VOL_TEXT = { L: '低', M: '中', H: '高' };
@@ -3912,11 +3920,12 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return '<div class="regime-box fcbox"><b>下季預告</b>（兩個裡面會發生一個，各半機率）' + (D.macroMult(s.quarter + 1) > 1 ? '<b class="up">封關年：影響加倍</b>' : '') + s.forecast.map(function (id) {
       var m = D.macro[id];
       return '<div><b>' + esc(m.name) + '</b>：' + (fxText(fxList(m, D.macroMult(s.quarter + 1))) || '無影響') + '<span class="muted">・景氣分數 ' + (m.score * (K.scoreScale || 1) >= 0 ? '+' : '−') + Math.abs(m.score * (K.scoreScale || 1)) + '</span></div>';
-    }).join('') + '</div>';
+    }).join('') + nextHint(s) + '</div>';
   }
+  function nextHint(s) { var n = AI.nextRegime ? AI.nextRegime(s) : E.regimeOf(s.score); return s.quarter < s.quarters ? '<div class="muted">照目前分數和下季預告的平均推估，下季開盤大約是<b class="' + (n === 'bull' ? 'up' : n === 'bear' ? 'down' : '') + '">' + REGIME_TEXT[n] + '</b>（燈號每季開盤定案，央行和景氣轉向只改分數）</div>' : ''; }
   function regimeBox(s) {
     var r = K.regimeRules[s.regime];
-    return '<div class="regime-box ' + s.regime + '"><b>' + REGIME_TEXT[s.regime] + '季</b>' + (s.flipped ? '（景氣轉向）' : '') + '　景氣分數 <b class="num">' + s.score + '</b>（' + K.scoreBull + ' 分以上多頭、' + K.scoreBear + ' 分以下空頭）<br>' +
+    return '<div class="regime-box ' + s.regime + '"><b>' + REGIME_TEXT[s.regime] + '季</b>' + '　景氣分數 <b class="num">' + s.score + '</b>（' + K.scoreBull + ' 分以上多頭、' + K.scoreBear + ' 分以下空頭）<br>' +
       '一般買進' + (r.buyDisc ? '打 ' + Math.round((1 - r.buyDisc) * 100) / 10 + ' 折' : '原價') + '・併購溢價 ' + Math.round(r.premium * 100) + '%・賣出' + (r.sellFee ? '交易成本 ' + Math.round(r.sellFee * 100) + '%' : '免交易成本') + '<br><b>季末全市場 ' + (K.regimeDrift[s.regime] > 0 ? '+' : K.regimeDrift[s.regime] < 0 ? '−' : '') + Math.round(Math.abs(K.regimeDrift[s.regime]) * 100) + '%</b>・現金年利率 ' + Math.round(K.cashRateQ[s.regime] * 400) + '%（以季末當下的燈號計算）</div>' + stockBox(s) + forecastBox(s);
   }
   // 這檔股票誰持有幾張：大股東標 ★，自己的張數在右邊那欄，這裡只列對手
@@ -3971,7 +3980,6 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   function whyNot(s, me, type) {
     var def = D.cards[type], cell = D.board[s.players[me].pos];
     if (type === 'treasury' && !s.major.some(function (m) { return m === me; })) return '你要先當上某家公司的大股東';
-    if (type === 'flip' && s.regime === 'flat') return '盤整季不能用';
     if (type === 'lock') return s.major.some(function (m) { return m === me; }) ? '你當大股東的公司都已經鎖定了' : '你要先當上某家公司的大股東';
     if ((type === 'bull' || type === 'bear') && s.phase === 'act' && cell.type === 'company') return '這個產業這一季已經被卡片影響過';
     return WHEN_TEXT[def.when];
@@ -3986,6 +3994,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       if (ok && def.need === 'steps') {
         acts = '<span class="muted">走幾步：</span>';
         for (var k = 1; k <= 6; k++) acts += '<button class="btn small gold" data-act="play" data-uid="' + c.uid + '" data-steps="' + k + '" title="' + cellName((p.pos + k) % D.board.length) + '">' + k + '</button>';
+      } else if (ok && def.need === 'dir') {
+        acts = '<span class="muted">往哪推：</span><button class="btn small gold" data-act="play" data-uid="' + c.uid + '" data-dir="1">往多頭 +' + K.flipScore + '</button><button class="btn small gold" data-act="play" data-uid="' + c.uid + '" data-dir="-1">往空頭 −' + K.flipScore + '</button>';
       } else if (ok && def.need === 'company') {
         acts = '<span class="muted">鎖哪家：</span>' + E.lockable(s, who).map(function (ci) { return '<button class="btn small gold" data-act="play" data-uid="' + c.uid + '" data-cid="' + ci + '">' + cname(ci) + ' ' + p.holdings[ci] + ' 張</button>'; }).join('');
       } else if (ok && def.need === 'target') {
@@ -4009,7 +4019,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     var s = game.state, p = s.players[pid], hv = E.holdingsValue(s, pid), html = '';
     html += '<div class="facts"><div>總資產<b>' + wan1(E.total(s, pid)) + '</b></div><div>現金<b>' + wan1(p.cash) + '</b></div><div>持股市值<b>' + wan1(hv) + '</b></div><div>繞圈<b>' + p.laps + ' 次</b></div>' +
       '<div>累計領到股息<b>' + yuan(p.divGot || 0) + '</b></div><div>累計股東報酬<b>' + yuan(p.majorGot || 0) + '</b></div><div>累計現金利息<b>' + yuan(p.interestGot || 0) + '</b></div></div>';
-    html += '<div class="block"><div class="muted">手牌 ' + p.hand.length + ' 張' + (p.audits ? '・<span class="up">今年被查帳 ' + p.audits + ' 次：年底罰股票市值 ' + p.audits * 5 + '%</span>' : '') + (p.auditPaid ? '・<span class="up">累計被查帳罰 ' + wan(p.auditPaid) + '</span>' : '') + '</div></div>';
+    html += '<div class="block"><div class="muted">手牌 ' + p.hand.length + ' 張' + (p.audits ? '・<span class="up">今年被查帳 ' + p.audits + ' 次，年底預估罰 ' + wan(Math.round(E.holdingsValue(s, pid) * K.auditFine * p.audits)) + '</span>' : '') + (p.auditPaid ? '・<span class="up">累計被查帳罰 ' + wan(p.auditPaid) + '</span>' : '') + '</div></div>';
     var list = [], totCost = 0, expDiv = 0, expMajor = 0;
     D.companies.forEach(function (c) {
       if (!p.holdings[c.id]) return;
@@ -4047,7 +4057,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     shop: { pass: '3 張裡買 1 張', land: '5 張裡買 2 張' },
     broker: { land: '任一家公司買 10 張、可併購' },
     swan: { land: '黑天鵝：全市場大事件' },
-    cb: { land: '你決定：景氣分數 ±' + K.cbStep },
+    cb: { land: '你決定：景氣分數 ±' + K.cbStep + '（影響下季）' },
     brief: { land: '隨機一家 +5%～10%' },
     ritual: { land: '隨機一家 −5%～10%' },
     company: { land: '買這家最多 ' + K.buyCap + ' 張、可併購' }
@@ -4134,12 +4144,12 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       '<div><span>📰</span><b>總經事件</b><small>每季開盤，下一季的候選會先預告</small></div>' +
       '<div><span>🦢</span><b>黑天鵝</b><small>有人停在黑天鵝格</small></div>' +
       '<div><span>🏛️</span><b>央行</b><small>停在央行的人決定 ±' + K.cbStep + '</small></div>' +
-      '<div><span>🔄</span><b>景氣轉向卡</b><small>分數往新方向推 ' + K.flipScore + '</small></div>' +
+      '<div><span>🔄</span><b>景氣轉向卡</b><small>選方向，分數 ±' + K.flipScore + '</small></div>' +
       '<div><span>🧲</span><b>慣性與救市</b><small>離 25 分越遠拉回越多；同一燈號越久，央行越會出手</small></div></div>';
     h += '<h3>其他市場事件</h3><div class="h-tips">' +
       '<div><span>💥</span><b>個股事件</b><small>財報爆雷或大單：之後每位玩家移動，那家再 ±' + K.stockStepMin + '%～' + K.stockStepMax + '%</small></div>' +
       '<div><span>🎆</span><b>封關年（第 5 年）</b><small>總經事件 ×' + K.finalMacroMult + '，每季必有個股事件、每次 ±' + K.finalStepMin + '%～' + K.finalStepMax + '%</small></div>' +
-      '<div><span>🔄</span><b>景氣轉向卡</b><small>這一季燈號多空互換，分數往新方向推 ' + K.flipScore + '</small></div></div>';
+      '<div><span>🔒</span><b>燈號開盤定案</b><small>央行、景氣轉向、黑天鵝只改分數，下一季才換燈</small></div></div>';
     return h;
   }
   function helpSheet() {
@@ -4499,7 +4509,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   EV.cb = function (e) {
     view.score = e.score; view.regime = e.regime;
     renderHud(); scene.drawScreen();
-    var txt = (e.dir > 0 ? '降息' : '升息') + '：景氣分數 ' + e.from + ' → ' + e.score + (e.regime !== e.regimeFrom ? '，本季改為' + REGIME_TEXT[e.regime] : '');
+    var txt = (e.dir > 0 ? '降息' : '升息') + '：景氣分數 ' + e.from + ' → ' + e.score + '（本季燈號不變，影響下一季）';
     logLine(pname(e.p) + ' 在央行決定' + txt);
     return showCard({ kicker: pname(e.p) + ' 主持央行理監事會', title: e.dir > 0 ? '降息' : '升息', html: '<div class="ctx-text">' + txt + '</div>', ms: 1800 });
   };
@@ -4572,7 +4582,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     else if (e.card === 'audit') extra = '，查 ' + pname(e.target) + ' 的帳（今年第 ' + e.times + ' 次，年底罰股票市值 ' + e.times * 5 + '%，罰款歸檢舉人）';
     else if (e.card === 'home') extra = '，直接回到結算站';
     else if (e.card === 'lock') extra = '，鎖定「' + cname(e.cid) + '」到第 ' + Math.ceil(e.until / 4) + ' 年第 ' + (((e.until - 1) % 4) + 1) + ' 季';
-    else if (e.card === 'flip') { extra = '，本季改為' + REGIME_TEXT[e.regime] + '，景氣分數 ' + e.scoreFrom + ' → ' + e.score; view.regime = e.regime; view.score = e.score; renderHud(); scene.drawScreen(); }
+    else if (e.card === 'flip') { extra = '，景氣分數往' + (e.dir > 0 ? '多頭' : '空頭') + '推：' + e.scoreFrom + ' → ' + e.score + '（本季燈號不變，影響下一季）'; view.score = e.score; renderHud(); scene.drawScreen(); }
     else if (e.sector) extra = '，' + D.sectorById(e.sector).name + ' 擲出 ' + e.die + ' 點 ' + (e.pct > 0 ? '+' : '−') + Math.abs(e.pct) + '%';
     logLine(pname(e.p) + ' 打出「' + cardName(e.card) + '」' + extra);
     toast(pname(e.p) + ' 打出「<b>' + cardName(e.card) + '</b>」' + extra);
@@ -4989,6 +4999,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       if (el.dataset.steps) cmd.steps = +el.dataset.steps;
       if (el.dataset.target) cmd.target = +el.dataset.target;
       if (el.dataset.cid) cmd.cid = +el.dataset.cid;
+      if (el.dataset.dir) cmd.dir = +el.dataset.dir;
       ui.sheet = null;
       dispatch(cmd);
     },
