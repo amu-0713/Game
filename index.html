@@ -516,7 +516,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     <li>股價單位是元，一張的價錢是股價乘以 1,000。股價 50 元，一張就是 5 萬。</li>
     <li>買：踩到公司格、證券交易所最多 10 張；用「遠端下單」最多 5 張，而且不能買你站著的那一家。不收手續費。</li>
     <li>併購：能買的時候，也可以向其他玩家買走他手上的股票，價格是市價加溢價（多頭 15%、盤整 10%、空頭 5%），全部付給對方。併購另外有每回合 10 張的額度，和一般買進分開算。遠端下單不能併購。敵意併購可以免溢價、不限張數。</li>
-    <li>賣：輪到自己時隨時可賣，收成交金額 1% 的交易成本。</li>
+    <li>賣：輪到自己時隨時可賣，收成交金額的交易成本（依燈號）。這回合剛買進（含併購）的張數，要等下一回合才能賣。</li>
     <li>同一檔股票所有人都能買，沒有獨佔。</li>
     <li>每檔股票會標示「便宜」「合理」「偏貴」，代表現在的股價相對它的體質貴不貴。便宜的股票長期比較容易漲回來。</li>
     <li>題材餘溫：這一季總經事件的影響，下一季還會有大約三成的餘波。市場行情裡會顯示每個產業的餘溫。</li>
@@ -529,7 +529,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     <li><b>大股東權益報酬</b>：你當大股東的每家公司，發你持股市值的 5%。</li>
     <li><b>現金利息</b>：每季收盤依當下燈號累積，多頭季年利率 1%、盤整 2%、空頭 6%（每季收盤手上現金 × 年利率 ÷ 4），年底一起發。</li>
   </ul>
-  <p><b>查帳罰款</b>：今年被查帳的人，發完錢後罰股票市值的 5% × 被查次數；先扣剛發的錢和現金，不夠就從市值最高的股票強制賣出。</p>
+  <p><b>查帳罰款</b>：今年被查帳的人，發完錢後罰股票市值的 5% × 被查次數，罰款付給出查帳卡的人（檢舉獎金）；先扣剛發的錢和現金，不夠就從市值最高的股票強制賣出。</p>
 
   <h3>大股東</h3>
   <p>某家公司持股最多、而且至少 3 張的人是大股東。最多張數有兩人以上一樣時，這家公司沒有大股東。</p>
@@ -578,6 +578,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 </template>
 
 <template id="tplBalance">
+  <p><b>第 21 版：當回合買進的股票不能當回合賣出；查帳罰款改成付給出卡的人（檢舉獎金）。</b></p>
   <p><b>第 20 版：景氣轉向除了翻轉本季燈號，景氣分數也往新方向推 4 分。</b></p>
   <p><b>第 19 版：刪掉三顆骰，新增「直達結算站」（2 張）：不擲骰直接回結算站，拿遠端下單和一張策略卡。</b></p>
   <p><b>第 18 版：增資認購改成這回合買進不限張數（可以接遠距下單、庫藏股）；敵意併購改成免溢價且不限張數（可以接公開收購）。</b></p>
@@ -913,7 +914,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     treasury: { name: '庫藏股', cat: 'action', when: 'turn', count: 2, text: '這回合你當大股東的公司，不用踩到也能九折買進，最多 5 張。' },
     bear: { name: '產業利空', cat: 'attack', when: 'act', count: 3, text: '你站著的公司所屬產業，擲一顆骰下跌 5%～10%。' },
     hostile: { name: '敵意併購', cat: 'attack', when: 'turn', count: 3, text: '這回合併購不用付溢價，也不限張數（可以把對手的持股全部收走）。' },
-    audit: { name: '查帳', cat: 'attack', when: 'turn', count: 2, text: '指定一位對手，今年年底罰他股票市值的 5%，被查幾次就罰幾份（先從年底發的錢扣，再扣現金，還不夠就強制賣股）。', need: 'target' },
+    audit: { name: '查帳', cat: 'attack', when: 'turn', count: 2, text: '指定一位對手，今年年底罰他股票市值的 5%，罰款給你（檢舉獎金）。被查幾次罰幾份；他現金不夠就強制賣股。', need: 'target' },
     tender: { name: '公開收購', cat: 'attack', when: 'turn', count: 2, text: '這回合不用踩到，可以向對手併購任一家公司，最多 5 張。' },
     bull: { name: '產業利多', cat: 'neutral', when: 'act', count: 3, text: '你站著的公司所屬產業，擲一顆骰上漲 5%～10%。' },
     flip: { name: '景氣轉向', cat: 'neutral', when: 'turn', count: 2, text: '這一季的燈號立刻翻轉（多頭與空頭互換），景氣分數也往新方向推 4 分，盤整時不能用。' }
@@ -1071,8 +1072,8 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
 
   // 查帳罰款（年底）：持股市值的 5% × 被查次數；年底發的錢已經先入帳，再扣現金，不夠就從市值最高的股票開始強制賣出（不收手續費）
   function auditFine(s, pid, ev) {
-    var p = s.players[pid], times = p.audits || 0, fine = Math.round(holdingsValue(s, pid) * K.auditFine * times), sold = [];
-    p.audits = 0;
+    var p = s.players[pid], by = p.auditBy || [], times = by.length, fine = Math.round(holdingsValue(s, pid) * K.auditFine * times), sold = [];
+    p.audits = 0; p.auditBy = [];
     if (!times) return 0;
     while (p.cash < fine) {
       var best = -1, bv = 0;
@@ -1090,8 +1091,22 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     p.cash -= fine;
     p.auditPaid = (p.auditPaid || 0) + fine;
     s.stats.auditFines = (s.stats.auditFines || 0) + fine;
-    ev.push({ t: 'audit_fine', p: pid, fine: fine, sold: sold, times: times, year: s.quarter / 4 });
+    // 檢舉獎金：每一次查帳的人分到一份
+    var paid = 0, to = [];
+    by.forEach(function (a, k) {
+      var share = k === by.length - 1 ? fine - paid : Math.floor(fine / times);
+      paid += share;
+      s.players[a].cash += share;
+      s.players[a].auditGot = (s.players[a].auditGot || 0) + share;
+      to.push({ p: a, amt: share });
+    });
+    ev.push({ t: 'audit_fine', p: pid, fine: fine, sold: sold, times: times, to: to, year: s.quarter / 4 });
     return fine;
+  }
+  // 能賣幾張：這回合剛買進（含併購）的張數要等下一回合才能賣
+  function sellable(s, pid, cid) {
+    var p = s.players[pid], fresh = s.turn === pid && s.ctx && s.ctx.fresh ? s.ctx.fresh[cid] || 0 : 0;
+    return Math.max(0, p.holdings[cid] - fresh);
   }
   function updateMajor(s, cid, ev) {
     var max = 0, who = [], i;
@@ -1191,7 +1206,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   function beginTurn(s, ev) {
     s.phase = 'pre';
     s.pending = null;
-    s.ctx = { dice: null, allow: [], rolled: false, extraBuy: 0, noPremium: false, treasury: false };
+    s.ctx = { dice: null, allow: [], rolled: false, extraBuy: 0, noPremium: false, treasury: false, fresh: {} };
     ev.push({ t: 'turn', p: s.turn });
   }
 
@@ -1559,6 +1574,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     p.cash -= cost;
     p.costBasis[cid] += cost;
     p.holdings[cid] += qty;
+    s.ctx.fresh[cid] = (s.ctx.fresh[cid] || 0) + qty;
     s.stats.bought[cid] += qty;
     book(s, pid, cid, 'b', qty, cost);
     ev.push({ t: 'buy', p: pid, cid: cid, qty: qty, cost: cost, saved: full - cost });
@@ -1581,6 +1597,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     p.holdings[cid] += qty;
     q.costBasis[cid] = Math.round((q.costBasis[cid] * (q.holdings[cid] - qty)) / q.holdings[cid]);
     q.holdings[cid] -= qty;
+    s.ctx.fresh[cid] = (s.ctx.fresh[cid] || 0) + qty;
     q.cash += cost;
     s.stats.merges += qty;
     book(s, pid, cid, 'mi', qty, cost);
@@ -1635,6 +1652,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     var cid = c.cid, qty = c.qty, pid = s.turn, p = s.players[pid];
     if (!(cid >= 0 && cid < NC) || !(qty > 0) || qty !== Math.floor(qty)) return '賣出內容不正確';
     if (p.holdings[cid] < qty) return '持股不足';
+    if (sellable(s, pid, cid) < qty) return '這回合剛買的股票不能當回合賣出（現在最多能賣 ' + sellable(s, pid, cid) + ' 張）';
     var gain = Math.round(lotValue(s, cid) * qty * (1 - sellFee(s)));
     p.costBasis[cid] = Math.round((p.costBasis[cid] * (p.holdings[cid] - qty)) / p.holdings[cid]);
     p.holdings[cid] -= qty;
@@ -1702,7 +1720,12 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
         break;
       case 'hostile': s.ctx.noPremium = true; break;
       case 'tender': s.ctx.allow.push({ any: true, cid: -1, mcid: -1, mleft: K.tenderCap, src: 'tender' }); break;
-      case 'audit': e.target = c.target; e.times = s.players[c.target].audits = (s.players[c.target].audits || 0) + 1; break;
+      case 'audit':
+        var tq = s.players[c.target];
+        if (!tq.auditBy) tq.auditBy = [];
+        tq.auditBy.push(pid);
+        e.target = c.target; e.times = tq.audits = tq.auditBy.length;
+        break;
       case 'flip':
         s.regime = s.regime === 'bull' ? 'bear' : 'bull';
         s.flipped = true;
@@ -1782,7 +1805,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
         return {
           id: i, name: p.name, kind: p.kind || 'ai', style: p.style || null,
           cash: startCash, pos: 0, holdings: z, costBasis: z2, hand: [], active: [],
-          laps: 0, sold: false, auditPaid: 0, audits: 0, locks: {}, shopSpent: 0, book: {}, divGot: 0, majorGot: 0, interestGot: 0, interestAcc: 0, history: [startCash]
+          laps: 0, sold: false, auditPaid: 0, auditGot: 0, audits: 0, auditBy: [], locks: {}, shopSpent: 0, book: {}, divGot: 0, majorGot: 0, interestGot: 0, interestAcc: 0, history: [startCash]
         };
       }),
       prices: D.companies.map(function (c) { return c.price0; }),
@@ -1826,7 +1849,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     hasActive: hasActive, unitCost: unitCost, buyMult: buyMult, allowance: allowance, maxBuy: maxBuy,
     mergeAllowance: mergeAllowance, mergeUnit: mergeUnit, maxMerge: maxMerge,
     mergePremium: mergePremium, sellFee: sellFee, canPlay: canPlay, regimeOf: regimeOf,
-    lotValue: lotValue, ranking: ranking, insider: insider, locked: locked, lockable: lockable
+    lotValue: lotValue, ranking: ranking, insider: insider, sellable: sellable, locked: locked, lockable: lockable
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);
 </script>
@@ -1955,7 +1978,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     for (var i = 0; i < NC; i++) {
       if (!p.holdings[i]) continue;
       // 大股東只賣多出來的張數，保住大股東；多賣的那幾張也會少領大股東報酬
-      var qty = p.holdings[i], mj = s.major[i] === pid;
+      var qty = E.sellable(s, pid, i), mj = s.major[i] === pid;
       if (mj) { var oth = 0; for (var o = 0; o < s.players.length; o++) if (o !== pid) oth = Math.max(oth, s.players[o].holdings[i]); qty -= Math.max(K.majorMin, oth + 1); }
       if (qty <= 0) continue;
       var lot = E.lotValue(s, i), save = lot * K.auditFine * p.audits;
@@ -1981,7 +2004,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       }
       else if (st === 'aggressive') sell = r > 1.35 || tr < -0.035;
       else sell = tr < -0.035;
-      if (sell) return { type: 'SELL', player: pid, cid: i, qty: p.holdings[i] };
+      if (sell && E.sellable(s, pid, i) > 0) return { type: 'SELL', player: pid, cid: i, qty: E.sellable(s, pid, i) };
     }
     return null;
   }
@@ -3717,12 +3740,13 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     return seg + (mode === 'merge' ? mergeHtml(cid, me) : buyHtml(cid, me));
   }
   function sellHtml(cid, me) {
-    var s = game.state, have = s.players[me].holdings[cid];
-    if (have <= 0) return '';
+    var s = game.state, own = s.players[me].holdings[cid], have = E.sellable(s, me, cid);
+    if (own <= 0) return '';
+    if (have <= 0) return '<div class="ctx-text muted">這 ' + own + ' 張是這回合剛買的，下一回合才能賣。</div>';
     ui.qtySell = Math.max(1, Math.min(have, ui.qtySell));
     var gain = Math.round(E.lotValue(s, cid) * ui.qtySell * (1 - E.sellFee(s)));
     return '<div class="trade">' + stepperHtml('sell', ui.qtySell) +
-      '<button class="btn sell grow" data-act="sell" data-cid="' + cid + '">賣出 ' + ui.qtySell + ' 張・拿回 ' + wan(gain) + '</button></div>';
+      '<button class="btn sell grow" data-act="sell" data-cid="' + cid + '">賣出 ' + ui.qtySell + ' 張・拿回 ' + wan(gain) + '</button></div>' + (have < own ? '<div class="muted" style="font-size:12.5px">其中 ' + (own - have) + ' 張是這回合剛買的，下一回合才能賣。</div>' : '');
   }
   function companyLine(cid) {
     var s = game.state, c = D.companies[cid], t = E.tag(s, cid);
@@ -4035,7 +4059,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       '<div class="h-chip up">💰 股息<small>每張固定金額</small></div>' +
       '<div class="h-chip up">👑 大股東報酬<small>持股市值 ' + Math.round(K.majorYield * 100) + '%</small></div>' +
       '<div class="h-chip up">🏦 現金利息<small>看燈號 1%～6%</small></div>' +
-      '<div class="h-chip down">🔍 查帳罰款<small>被查幾次罰幾份</small></div></div>';
+      '<div class="h-chip down">🔍 查帳罰款<small>被查幾次罰幾份，罰款給檢舉人</small></div></div>';
     h += '<h3>三個小訣竅</h3><div class="h-tips">' +
       '<div><span>🚦</span><b>看燈號</b><small>空頭季末全市場 ' + Math.round(K.regimeDrift.bear * 100) + '%，但買進打九折</small></div>' +
       '<div><span>👑</span><b>搶大股東</b><small>最多張、至少 ' + K.majorMin + ' 張；自己踩到可認股八五折或拉抬</small></div>' +
@@ -4090,7 +4114,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
     h += '<h3>好玩的組合</h3><div class="h-combos">' +
       '<div>🏁 直達結算站 → 🛰️ 遠端下單 → 📈 增資認購<small>不用踩到，任一家不限張數 all in</small></div>' +
       '<div>📣 公開收購 → ⚔️ 敵意併購<small>不用踩到，免溢價把對手持股全部收走</small></div>' +
-      '<div>🔍 查帳 ×2<small>年底罰對手股票市值 10%，專打全倉的人</small></div></div>';
+      '<div>🔍 查帳 ×2<small>年底罰對手股票市值 10%，罰款進你口袋</small></div></div>';
     return h;
   }
   function helpRegime() {
@@ -4255,7 +4279,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
       if (rows.length > 1 && rows[rows.length - 1].pnl < 0) html += '<div>最慘：' + cname(rows[rows.length - 1].cid) + ' ' + sg(rows[rows.length - 1].pnl) + '</div>';
     }
     var stockSum = rows.reduce(function (a, r) { return a + r.pnl; }, 0);
-    html += '<div class="muted">股票合計 ' + signed(stockSum) + '・現金利息 ' + signed(p.interestGot || 0) + '・買卡 ' + signed(-(p.shopSpent || 0)) + (p.auditPaid ? '・查帳罰款 ' + signed(-p.auditPaid) : '') + '</div></div>';
+    html += '<div class="muted">股票合計 ' + signed(stockSum) + '・現金利息 ' + signed(p.interestGot || 0) + '・買卡 ' + signed(-(p.shopSpent || 0)) + (p.auditPaid ? '・查帳罰款 ' + signed(-p.auditPaid) : '') + (p.auditGot ? '・檢舉獎金 ' + signed(p.auditGot) : '') + '</div></div>';
     if (!rows.length) return html + '<p class="muted">這位玩家整局都沒有買股票。</p>';
     html += '<div class="muted" style="margin:2px 0 6px">點一檔看股價走勢和進出點（▲買進 ▼賣出，金色是併購，✕是查帳強制賣）。</div>';
     html += rows.map(function (r) {
@@ -4541,7 +4565,7 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   EV.play = function (e, all) {
     var extra = '';
     if (e.card === 'pick') extra = '，走 ' + e.steps + ' 步';
-    else if (e.card === 'audit') extra = '，查 ' + pname(e.target) + ' 的帳（今年第 ' + e.times + ' 次，年底罰股票市值 ' + e.times * 5 + '%）';
+    else if (e.card === 'audit') extra = '，查 ' + pname(e.target) + ' 的帳（今年第 ' + e.times + ' 次，年底罰股票市值 ' + e.times * 5 + '%，罰款歸檢舉人）';
     else if (e.card === 'home') extra = '，直接回到結算站';
     else if (e.card === 'lock') extra = '，鎖定「' + cname(e.cid) + '」到第 ' + Math.ceil(e.until / 4) + ' 年第 ' + (((e.until - 1) % 4) + 1) + ' 季';
     else if (e.card === 'flip') { extra = '，本季改為' + REGIME_TEXT[e.regime] + '，景氣分數 ' + e.scoreFrom + ' → ' + e.score; view.regime = e.regime; view.score = e.score; renderHud(); scene.drawScreen(); }
@@ -4558,10 +4582,12 @@ button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px s
   };
   EV.audit_fine = function (e) {
     var sd = e.sold.map(function (x) { return cname(x.cid) + ' ' + x.qty + ' 張'; }).join('、');
-    var msg = '第 ' + e.year + ' 年底查帳罰款：' + pname(e.p) + ' 被查 ' + e.times + ' 次，罰 ' + wan(e.fine) + (sd ? '，現金不夠，強制賣出 ' + sd : '');
+    var tos = (e.to || []).reduce(function (m, x) { m[x.p] = (m[x.p] || 0) + x.amt; return m; }, {});
+    var toTxt = Object.keys(tos).map(function (k) { return pname(+k) + ' ' + wan(tos[k]); }).join('、');
+    var msg = '第 ' + e.year + ' 年底查帳罰款：' + pname(e.p) + ' 被查 ' + e.times + ' 次，罰 ' + wan(e.fine) + (toTxt ? '，檢舉獎金給 ' + toTxt : '') + (sd ? '，現金不夠，強制賣出 ' + sd : '');
     logLine(msg);
     renderPlayers();
-    if (victim(e.p)) return showCard({ cls: 'hit', kicker: '第 ' + e.year + ' 年底・查帳罰款', title: '罰 ' + wan(e.fine), html: '<div class="ctx-text">今年被查帳 ' + e.times + ' 次，罰股票市值的 ' + e.times * 5 + '%。' + (sd ? '<br>現金不夠，強制賣出 ' + sd + '。' : '') + '</div>', buttons: [{ label: '知道了', value: 1, cls: 'primary' }] });
+    if (victim(e.p)) return showCard({ cls: 'hit', kicker: '第 ' + e.year + ' 年底・查帳罰款', title: '罰 ' + wan(e.fine), html: '<div class="ctx-text">今年被查帳 ' + e.times + ' 次，罰股票市值的 ' + e.times * 5 + '%。' + (toTxt ? '<br>檢舉獎金給 ' + toTxt + '。' : '') + (sd ? '<br>現金不夠，強制賣出 ' + sd + '。' : '') + '</div>', buttons: [{ label: '知道了', value: 1, cls: 'primary' }] });
     toast(msg);
     return scene.wait(600);
   };
